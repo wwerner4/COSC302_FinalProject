@@ -8,6 +8,7 @@ class CardDeck {
         CardDeck(int numDecks = 1);
 
         void shuffle();
+        void discard();
         void addNewDeck();
         int draw();
         int deckSize;

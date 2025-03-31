@@ -32,6 +32,13 @@ void CardDeck::shuffle() {
     return;
 }
 
+void CardDeck::discard() {
+    deck.pop_back();
+    deckSize--;
+
+    return;
+}
+
 void CardDeck::addNewDeck() {
     deck.resize(deckSize + 52, -1);
 

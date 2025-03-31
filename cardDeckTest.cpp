@@ -4,7 +4,7 @@
 using namespace std;
 
 void printHand(vector<int> hand) {                  // 0-12: spades; 13-25: hearts; 26-38: diamonds; 39-51: clubs
-    for (int i = 0; i < hand.size(); i++) {
+    for (size_t i = 0; i < hand.size(); i++) {
         int card = hand[i];
         string suit;
         if (card < 13) suit = "♠";
@@ -32,13 +32,17 @@ void printHand(vector<int> hand) {                  // 0-12: spades; 13-25: hear
 }
 
 int main() {
-    int numDecks = 1;
+    int numDecks = 5;
     CardDeck *deck = new CardDeck(numDecks);
     deck->shuffle();
 
     cout << deck->deckSize << endl;
 
     vector<int> testHand;
+    for (int i = 0; i < 208; i++) {
+        deck->discard();
+    }
+
     for (int i = 0; i < 52; i++) {
         testHand.push_back(deck->draw());
     }
@@ -46,4 +50,13 @@ int main() {
     printHand(testHand);
 
     cout << deck->deckSize << endl;
+
+    deck->addNewDeck();
+
+    testHand.clear();
+    for (int i = 0; i < 52; i++) {
+        testHand.push_back(deck->draw());
+    }
+
+    printHand(testHand);
 }
