@@ -1,4 +1,5 @@
-#include <cardDeck.h>
+#include "cardDeck.h"
+#include<cstdlib>
 using namespace std;
 
 CardDeck::CardDeck(int numDecks) {
@@ -14,7 +15,20 @@ CardDeck::CardDeck(int numDecks) {
 }
 
 void CardDeck::shuffle() {
+    vector<int> shuffledDeck;
 
+    while (deck.size() > 0) {
+        int randElement = rand()%deck.size();
+        shuffledDeck.push_back(deck[randElement]);
+
+        vector<int>::iterator pos = deck.begin();
+        for (int i = 0; i < randElement; i++) {
+            pos++;
+        }
+        deck.erase(pos);
+    }
+
+    deck = shuffledDeck;
     return;
 }
 

@@ -4,14 +4,16 @@
 #include <vector>
 
 class CardDeck {
-    int deckSize;
-    std::vector<int> deck;
+    public:
+        CardDeck(int numDecks = 1);
 
-    CardDeck(int numDecks = 1);
+        void shuffle();
+        void addNewDeck();
+        int draw();
+        int deckSize;
 
-    void shuffle();
-    void addNewDeck();
-    int draw();
+    private:
+        std::vector<int> deck;
 };
 
 #endif
