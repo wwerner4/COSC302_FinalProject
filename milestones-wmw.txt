@@ -1,0 +1,17 @@
++10 A C++ program that allows users to play a multiplayer game of poker/ other casino games on the command line (game functionality excluding ai players)
+    +2 - a cardDeck class
+        - the game deck
+        - capability to shuffle, draw, and discard from the deck
+    +2 - a player class
+        - the player's chip count
+        - the player's hand
+    +6 - a game function that controls the flow of the game
++15 Capability for users to play against computer-controlled opponents on the command line (game functionality including ai players)
+    - logic for controlling computer opponents
+        +5 - a system for rating the quality of a player's hand (may also be available to players)
+        +8 - a system for controlling computer betting
+        +2 - a system for controlling computer bluffing (potentially involving computer player "personality", where certain computer players at a table are more or less likely to bluff)
++15 Integration with a game engine like Unreal (our current plan), or potentially a C++ library like SFML, to incorporate graphics beyond the command line into gameplay
+    +2  - development of basic art assets
+    +13 - development of a game framework, with features such as clickable buttons to control gameplay and simple animations to represent actions such as cards being drawn.
+            - this aspect contains the most unknowns, and will require study of the chosen game engine/ library
