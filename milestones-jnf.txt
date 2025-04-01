@@ -1,0 +1,18 @@
++10 A C++ program that allows users to play a multiplayer game of poker/ other casino games on the command line (just the simple game functionality)
+    +2 - a way to store the cards (data structure that is clearly visible)
+        - a proper game deck exists and is accessible 
+        - 4-7 players can join a table
+    +2 - a player/user class
+        - the player's hand is stored and is readable/accessible
+        - the player's overall current type of hand (for example, royale flush, three of a kind, four of a kind, etc.)
+    +6 - a game function that speeds up or slows down the AIs playing speed (for convenience to the user)
++15 AI Opponents
+    - includes basically framework for intermediate level AI
+        +5 - a system for the AI to determine the value of its hand probabilistically
+        +8 - a system that plays on its turn 
+        +2 - a system which its framework isn't extremely predictable 
++15 Graphical Interface
+    +2  - Card rendering prototype
+    +13 - Developed a proper, aesthetic Unity graphical interface which works as expected for a traditional poker game. All buttons, bets, folds, etc
+        work as anticipated and the game does not crash.
+            - This is a main point of discussion, as this part of the project could slightly change over time.
