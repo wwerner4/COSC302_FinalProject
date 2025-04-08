@@ -13,7 +13,7 @@ all:		$(PROGRAMS)
 	$(CXX) $(CXXFLAGS) -o $@ -c $^
 
 cardDeckTest:	$(OBJECTS) 
-	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS) -lsfml-graphics -lsfml-window -lsfml-system
 
 clean:
 	rm -f $(PROGRAMS) $(OBJECTS)
