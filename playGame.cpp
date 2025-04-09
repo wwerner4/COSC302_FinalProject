@@ -1,6 +1,6 @@
 #include "cardDeck.h"
 #include <iostream>
-#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 using namespace std;
 
@@ -33,6 +33,7 @@ void printHand(vector<int> hand) {                  // 0-12: spades; 13-25: hear
 }
 
 int main() {
+    /*
     int numDecks = 5;
     CardDeck *deck = new CardDeck(numDecks);
     deck->shuffle();
@@ -60,13 +61,33 @@ int main() {
     }
 
     //printHand(testHand);
+    */
 
 
-    sf::Window window(sf::VideoMode(800, 600), "My window");
-    // run the program as long as the window is open
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Poker");
+    window.setVerticalSyncEnabled(false);
+    window.setFramerateLimit(144);
+
+    sf::Font font;
+    font.loadFromFile("./data/minecraft_font.ttf");
+
+    sf::Text text;
+    text.setFont(font);
+    text.setString("Hello World");
+    text.setCharacterSize(80);
+    text.setFillColor(sf::Color::White);
+
+    sf::FloatRect textSpace = text.getLocalBounds();
+    text.setOrigin(textSpace.width/2,textSpace.height/2);
+
+    sf::RectangleShape rect(sf::Vector2f(textSpace.width, textSpace.height));
+    rect.setOrigin(textSpace.width/2,textSpace.height/2);
+    rect.setFillColor(sf::Color::Black);
+
+    // first of 2 nested loops constituting the event loop
     while (window.isOpen())
     {
-        // check all the window's events that were triggered since the last iteration of the loop
+        // second of 2 nested loops constituting the event loop
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -74,6 +95,19 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+
+        // best practice is to redraw the frame from scratch at each frame. each frame is drawn sequentially, with newer draws on top of older draws. always clear first (reset to background color)
+        window.clear(sf::Color(36,156,68,255));
+
+        text.setPosition(window.getSize().x/2,window.getSize().y/2 - 20);
+        rect.setPosition(window.getSize().x/2,window.getSize().y/2);
+
+        cout << text.getPosition().x << " " << text.getPosition().y << endl;
+
+        window.draw(rect);
+        window.draw(text);
+
+        window.display();
     }
 
     return 0;
