@@ -17,4 +17,6 @@ class CardDeck {
         std::vector<int> deck;
 };
 
+void printHand(std::vector<int>);
+
 #endif
