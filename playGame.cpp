@@ -11,7 +11,7 @@ int main() {
 
     GameGraphics *game = new GameGraphics();
 
-    game->testScreen();
+    game->titleScreen();
 
 
     // first of 2 nested loops constituting the event loop

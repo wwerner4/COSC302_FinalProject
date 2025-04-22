@@ -4,21 +4,41 @@
 using namespace std;
 
 GameGraphics::GameGraphics() {
-    window.create(sf::VideoMode(800, 600), "Poker");
+    window.create(sf::VideoMode(1200, 900), "Poker");
     window.setVerticalSyncEnabled(false);
     window.setFramerateLimit(144);
 
     font.loadFromFile("./data/minecraft_font.ttf");
-    currentWindowSize.x = 800;
-    currentWindowSize.y = 600;
+    currentWindowSize.x = window.getSize().x;
+    currentWindowSize.y = window.getSize().y;
 
     return;
 }
 
+GameGraphics::~GameGraphics() {
+    clearWindow();
+    return;
+}
+
 void GameGraphics::clearWindow() {
+    for (size_t i = 0; i < texts.size(); i++) {
+        delete texts[i];
+    }
     texts.clear();
+
+    for (size_t i = 0; i < shapes.size(); i++) {
+        delete shapes[i];
+    }
     shapes.clear();
-    elements.clear();
+
+    for (size_t i = 0; i < drawnElements.size(); i++) {
+        for (size_t j = 0; j < drawnElements[i].size(); j++) {
+            delete drawnElements[i][j];
+        }
+        drawnElements[i].clear();
+    }
+    drawnElements.clear();
+
     return;
 }
 
@@ -52,9 +72,9 @@ void GameGraphics::loopDraw() {
     // best practice is to redraw the frame from scratch at each frame. each frame is drawn sequentially, with newer draws on top of older draws. always clear first (reset to background color)
     window.clear(sf::Color(36, 156, 68, 255));
 
-    for (size_t i = 0; i < elements.size(); i++) {
-        for (size_t j = 0; j < elements[i].size(); j++) {
-            window.draw(*elements[i][j]);
+    for (size_t i = 0; i < drawnElements.size(); i++) {
+        for (size_t j = 0; j < drawnElements[i].size(); j++) {
+            window.draw(*drawnElements[i][j]);
         }
     }
 
@@ -65,6 +85,7 @@ void GameGraphics::loopDraw() {
 
 void GameGraphics::testScreen() {
     clearWindow();
+    drawnElements.resize(1);
 
     sf::Text *text = new sf::Text;
     texts.push_back(text);
@@ -84,15 +105,30 @@ void GameGraphics::testScreen() {
     rect->setFillColor(sf::Color::Black);
 
     text->setPosition(window.getSize().x / 2, window.getSize().y / 2);
-    rect->setPosition(window.getSize().x / 2, window.getSize().y / 2 + 20);
+    rect->setPosition(window.getSize().x / 2, window.getSize().y / 2 +20);
 
-    elements.resize(1);
-    elements[0].push_back(rect);
-    elements[0].push_back(text);
+    drawnElements[0].push_back(rect);
+    drawnElements[0].push_back(text);
 
     return;
 }
 
 void GameGraphics::titleScreen() {
     clearWindow();
+    drawnElements.resize(1);
+
+    sf::Text *title = new sf::Text;
+    texts.push_back(title);
+    drawnElements[0].push_back(title);
+
+    title->setFont(font);
+    title->setString("Poker (Working Title)");
+    title->setCharacterSize(80);
+    title->setFillColor(sf::Color::White);
+
+    title->setOrigin(title->getLocalBounds().width / 2, title->getLocalBounds().height * 0.35);
+    title->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 5);
+
+
+    return;
 }
