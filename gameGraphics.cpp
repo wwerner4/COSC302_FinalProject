@@ -3,6 +3,11 @@
 #include <iostream>
 using namespace std;
 
+struct GameGraphics::interactible{
+    sf::Shape *element;
+    char action;
+};
+
 GameGraphics::GameGraphics() {
     window.create(sf::VideoMode(1200, 900), "Poker");
     window.setVerticalSyncEnabled(false);
@@ -30,6 +35,12 @@ void GameGraphics::clearWindow() {
         delete shapes[i];
     }
     shapes.clear();
+
+    for (size_t i = 0; i < interactibles.size(); i++) {
+        delete interactibles[i]->element;
+        delete interactibles[i];
+    }
+    interactibles.clear();
 
     for (size_t i = 0; i < drawnElements.size(); i++) {
         for (size_t j = 0; j < drawnElements[i].size(); j++) {
@@ -66,6 +77,29 @@ void GameGraphics::resizeWindow(sf::Event resize) {
     currentWindowSize = newWindowSize;
 
     return;
+}
+
+void GameGraphics::onClick() {
+    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+    sf::Vector2f floatMousePos((float)mousePosition.x, (float)mousePosition.y);
+
+    sf::Vector2f interactibleOrigin, interactiblePosition;
+    for (size_t i = 0; i < interactibles.size(); i++) {
+        sf::Shape *button = interactibles[i]->element;
+
+        sf::FloatRect interactibleBounds = button->getGlobalBounds();
+        if (interactibleBounds.contains(floatMousePos)) {
+
+            switch(interactibles[i]->action) {
+                case 'p':
+                    playScreen();
+                    break;
+                case 'e':
+                    closeWindow();
+                    break;
+            }
+        }
+    }
 }
 
 void GameGraphics::loopDraw() {
@@ -115,7 +149,7 @@ void GameGraphics::testScreen() {
 
 void GameGraphics::titleScreen() {
     clearWindow();
-    drawnElements.resize(1);
+    drawnElements.resize(2);
 
     sf::Text *title = new sf::Text;
     texts.push_back(title);
@@ -126,9 +160,66 @@ void GameGraphics::titleScreen() {
     title->setCharacterSize(80);
     title->setFillColor(sf::Color::White);
 
-    title->setOrigin(title->getLocalBounds().width / 2, title->getLocalBounds().height * 0.35);
+    title->setOrigin(title->getLocalBounds().width / 2, title->getLocalBounds().height / 2);
     title->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 5);
 
+    sf::RectangleShape *playButton = new sf::RectangleShape(sf::Vector2f(500, 75));
+    shapes.push_back(playButton);
+    drawnElements[1].push_back(playButton);
 
+    interactible *button = new interactible;
+    button->element = playButton;
+    button->action = 'p';
+
+    interactibles.push_back(button);
+
+    playButton->setFillColor(sf::Color(163, 163, 163, 255));
+
+    playButton->setOrigin(playButton->getLocalBounds().width / 2, playButton->getLocalBounds().height / 2);
+    playButton->setPosition(title->getPosition().x, title->getPosition().y + 200);
+
+    sf::Text *playButtonText = new sf::Text;
+    texts.push_back(playButtonText);
+    drawnElements[1].push_back(playButtonText);
+
+    playButtonText->setFont(font);
+    playButtonText->setString("Play Game");
+    playButtonText->setCharacterSize(50);
+    playButtonText->setFillColor(sf::Color::White);
+
+    playButtonText->setOrigin(playButtonText->getLocalBounds().width / 2, playButtonText->getLocalBounds().height/ 2);
+    playButtonText->setPosition(playButton->getPosition().x, playButton->getPosition().y - 10);
+
+    sf::RectangleShape *exitButton = new sf::RectangleShape(sf::Vector2f(500, 75));
+    shapes.push_back(exitButton);
+    drawnElements[1].push_back(exitButton);
+
+    button = new interactible;
+    button->element = exitButton;
+    button->action = 'e';
+
+    interactibles.push_back(button);
+
+    exitButton->setFillColor(sf::Color(163, 163, 163, 255));
+
+    exitButton->setOrigin(exitButton->getLocalBounds().width / 2, exitButton->getLocalBounds().height / 2);
+    exitButton->setPosition(playButton->getPosition().x, playButton->getPosition().y + 100);
+
+    sf::Text *exitButtonText = new sf::Text;
+    texts.push_back(exitButtonText);
+    drawnElements[1].push_back(exitButtonText);
+
+    exitButtonText->setFont(font);
+    exitButtonText->setString("Exit");
+    exitButtonText->setCharacterSize(50);
+    exitButtonText->setFillColor(sf::Color::White);
+
+    exitButtonText->setOrigin(exitButtonText->getLocalBounds().width / 2, exitButtonText->getLocalBounds().height/ 2);
+    exitButtonText->setPosition(exitButton->getPosition().x, exitButton->getPosition().y - 10);
+
+    return;
+}
+
+void GameGraphics::playScreen() {
     return;
 }
