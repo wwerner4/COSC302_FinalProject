@@ -4,23 +4,28 @@
 #include <iostream>
 using namespace std;
 
+// constructor, init values that don't change (window object, font object)
 GameGraphics::GameGraphics() {
-    window.create(sf::VideoMode(1200, 900), "Poker");
+    window.create(sf::VideoMode(1200, 900), "Pixel Poker");
     window.setVerticalSyncEnabled(false);
     window.setFramerateLimit(144);
 
     font.loadFromFile("./data/minecraft_font.ttf");
+
+    // used in resizeWindow()
     currentWindowSize.x = window.getSize().x;
     currentWindowSize.y = window.getSize().y;
 
     return;
 }
 
+// free memory before destructing object
 GameGraphics::~GameGraphics() {
     clearWindow();
     return;
 }
 
+// delete all drawn elements in a scene, used before beginning drawing a different scene or before class object deletion
 void GameGraphics::clearWindow() {
     for (size_t i = 0; i < texts.size(); i++) {
         delete texts[i];
@@ -42,6 +47,7 @@ void GameGraphics::clearWindow() {
     }
     textures.clear();
 
+    // at this point, all drawable objects are already deleted. we just need to reset interactibles and drawnElements
     interactables.clear();
 
     for (size_t i = 0; i < drawnElements.size(); i++) {
@@ -54,15 +60,18 @@ void GameGraphics::clearWindow() {
     return;
 }
 
+// close the game window
 void GameGraphics::closeWindow() {
     window.close();
     return;
 }
 
+// function for scaling texts, shapes, and sprites correctly when the window size changes.
 void GameGraphics::resizeWindow(sf::Event resize) {
     sf::Vector2u newWindowSize(resize.size.width, resize.size.height);
     sf::Vector2f scaleFactor((float)newWindowSize.x/currentWindowSize.x, (float)newWindowSize.y/currentWindowSize.y);
 
+    // these loops are why we need texts, shapes, and sprites. drawnElements->getPosition() isn't a valid function call because drawnElements is sf::Drawable*, not specific drawable classes
     for (size_t i = 0; i < texts.size(); i++) {
         sf::Vector2f oldPosition = texts[i]->getPosition();
         texts[i]->setPosition(oldPosition.x * scaleFactor.x, oldPosition.y * scaleFactor.y);
@@ -83,6 +92,7 @@ void GameGraphics::resizeWindow(sf::Event resize) {
     return;
 }
 
+// function for handling drawn interactible clickables
 void GameGraphics::onClick() {
     sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
     sf::Vector2f floatMousePos((float)mousePosition.x, (float)mousePosition.y);
@@ -104,6 +114,7 @@ void GameGraphics::onClick() {
     }
 }
 
+// helper function to draw each frame
 void GameGraphics::loopDraw() {
     // best practice is to redraw the frame from scratch at each frame. each frame is drawn sequentially, with newer draws on top of older draws. always clear first (reset to background color)
     window.clear(sf::Color(36, 156, 68, 255));
@@ -119,6 +130,7 @@ void GameGraphics::loopDraw() {
     return;
 }
 
+// a test scene that the user should never see. this will eventually be deleted
 void GameGraphics::testScreen() {
     clearWindow();
     drawnElements.resize(1);
@@ -149,6 +161,7 @@ void GameGraphics::testScreen() {
     return;
 }
 
+// we should probably change getCardName in /CardEvaluation to fit this syntax (to associate card ints with textures in /data/PixelPlayingCardsPack), but my modifications live here for now
 string getCardNameModified(int cardValue) 
 {
     if (cardValue < 0 || cardValue > 51) 
@@ -170,6 +183,7 @@ string getCardNameModified(int cardValue)
     return "./data/PixelPlayingCardsPack/" + ranks[cardValue % 13] + "_" + suits[cardValue / 13] + "_white.png";
 }
 
+// build scene for the title screen of the game
 void GameGraphics::titleScreen() {
     clearWindow();
     drawnElements.resize(3);
@@ -268,10 +282,11 @@ void GameGraphics::titleScreen() {
     return;
 }
 
+// build the initial main game scene, currently just a layout
 void GameGraphics::playScreen() {
 
     clearWindow();
-    drawnElements.resize(3);    // table cards, player hand, interface, cpu hands
+    drawnElements.resize(4);    // table cards, player hand, interface, cpu hands
 
     CardDeck *testDeck = new CardDeck();
 
@@ -282,6 +297,7 @@ void GameGraphics::playScreen() {
     sf::Texture *texture;
     string cardName;
 
+    // setup table cards
     for (int i = 0; i < 5; i++) {
         tableCards.push_back(testDeck->draw());
 
@@ -292,14 +308,10 @@ void GameGraphics::playScreen() {
         textures.push_back(texture);
         texture->loadFromFile(cardName);
         card = new sf::Sprite(*texture);
-        card->setScale({2.5,2.5});
+        card->setScale(2,2);
 
         card->setOrigin(card->getLocalBounds().width / 2, card->getLocalBounds().height / 2);
-        if (drawnElements[0].size() == 0) {
-            card->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 2);
-        } else {
-            card->setPosition(sprites.back()->getPosition().x + 25, sprites.back()->getPosition().y);
-        }
+        card->setPosition(currentWindowSize.x / 2 + ((card->getLocalBounds().width*card->getScale().x) + 25)*(i - 2), currentWindowSize.y / 2);
 
         sprites.push_back(card);
         drawnElements[0].push_back(card);
@@ -307,6 +319,7 @@ void GameGraphics::playScreen() {
 
     vector<int> playerCards;
 
+    // setup player cards
     for (int i = 0; i < 2; i++) {
         playerCards.push_back(testDeck->draw());
 
@@ -323,12 +336,14 @@ void GameGraphics::playScreen() {
         if (drawnElements[1].size() == 0) {
             card->setPosition(currentWindowSize.x - 300, currentWindowSize.y - 150);
         } else {
-            card->setPosition(sprites.back()->getPosition().x + (sprites.back()->getLocalBounds().width)*2.5 + 25, sprites.back()->getPosition().y);      // mult localBounds by 2 because of scale factor
+            card->setPosition(sprites.back()->getPosition().x + (sprites.back()->getLocalBounds().width)*card->getScale().x + 25, sprites.back()->getPosition().y);      // mult localBounds by 2 because of scale factor
         }
 
         sprites.push_back(card);
         drawnElements[1].push_back(card);
     }
+
+    
 
 
     return;
