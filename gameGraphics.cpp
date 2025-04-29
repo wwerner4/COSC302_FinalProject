@@ -1,12 +1,8 @@
 #include "gameGraphics.h"
+#include "cardDeck.h"
 
 #include <iostream>
 using namespace std;
-
-struct GameGraphics::interactible{
-    sf::Shape *element;
-    char action;
-};
 
 GameGraphics::GameGraphics() {
     window.create(sf::VideoMode(1200, 900), "Poker");
@@ -36,15 +32,20 @@ void GameGraphics::clearWindow() {
     }
     shapes.clear();
 
-    for (size_t i = 0; i < interactibles.size(); i++) {
-        delete interactibles[i]->element;
-        delete interactibles[i];
+    for (size_t i = 0; i < sprites.size(); i++) {
+        delete sprites[i];
     }
-    interactibles.clear();
+    sprites.clear();
+
+    for (size_t i = 0; i < textures.size(); i++) {
+        delete textures[i];
+    }
+    textures.clear();
+
+    interactables.clear();
 
     for (size_t i = 0; i < drawnElements.size(); i++) {
         for (size_t j = 0; j < drawnElements[i].size(); j++) {
-            delete drawnElements[i][j];
         }
         drawnElements[i].clear();
     }
@@ -68,6 +69,9 @@ void GameGraphics::resizeWindow(sf::Event resize) {
     } for (size_t i = 0; i < shapes.size(); i++) {
         sf::Vector2f oldPosition = shapes[i]->getPosition();
         shapes[i]->setPosition(oldPosition.x * scaleFactor.x, oldPosition.y * scaleFactor.y);
+    } for (size_t i = 0; i < sprites.size(); i++) {
+        sf::Vector2f oldPosition = sprites[i]->getPosition();
+        sprites[i]->setPosition(oldPosition.x * scaleFactor.x, oldPosition.y * scaleFactor.y);
     }
 
     // https://www.sfml-dev.org/tutorials/2.2/graphics-view.php#showing-more-when-the-window-is-resized
@@ -83,20 +87,18 @@ void GameGraphics::onClick() {
     sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
     sf::Vector2f floatMousePos((float)mousePosition.x, (float)mousePosition.y);
 
-    sf::Vector2f interactibleOrigin, interactiblePosition;
-    for (size_t i = 0; i < interactibles.size(); i++) {
-        sf::Shape *button = interactibles[i]->element;
+    for (map<sf::Shape*,char>::iterator i = interactables.begin(); i != interactables.end(); i++) {
 
-        sf::FloatRect interactibleBounds = button->getGlobalBounds();
-        if (interactibleBounds.contains(floatMousePos)) {
+        sf::FloatRect interactableBounds = i->first->getGlobalBounds();
+        if (interactableBounds.contains(floatMousePos)) {
 
-            switch(interactibles[i]->action) {
+            switch(i->second) {
                 case 'p':
                     playScreen();
-                    break;
+                    return;
                 case 'e':
                     closeWindow();
-                    break;
+                    return;
             }
         }
     }
@@ -147,16 +149,37 @@ void GameGraphics::testScreen() {
     return;
 }
 
+string getCardNameModified(int cardValue) 
+{
+    if (cardValue < 0 || cardValue > 51) 
+    {
+        return "Invalid Card";
+    }
+
+    const vector<string> ranks = 
+    {
+        "ace", "2", "3", "4", "5", "6", "7", "8", 
+        "9", "10", "jack", "queen", "king"
+    };
+
+    const vector<string> suits = 
+    {
+        "hearts", "diamonds", "clubs", "spades"
+    };
+
+    return "./data/PixelPlayingCardsPack/" + ranks[cardValue % 13] + "_" + suits[cardValue / 13] + "_white.png";
+}
+
 void GameGraphics::titleScreen() {
     clearWindow();
-    drawnElements.resize(2);
+    drawnElements.resize(3);
 
     sf::Text *title = new sf::Text;
     texts.push_back(title);
     drawnElements[0].push_back(title);
 
     title->setFont(font);
-    title->setString("Poker (Working Title)");
+    title->setString("Pixel Poker");
     title->setCharacterSize(80);
     title->setFillColor(sf::Color::White);
 
@@ -167,11 +190,7 @@ void GameGraphics::titleScreen() {
     shapes.push_back(playButton);
     drawnElements[1].push_back(playButton);
 
-    interactible *button = new interactible;
-    button->element = playButton;
-    button->action = 'p';
-
-    interactibles.push_back(button);
+    interactables[playButton] = 'p';
 
     playButton->setFillColor(sf::Color(163, 163, 163, 255));
 
@@ -194,11 +213,7 @@ void GameGraphics::titleScreen() {
     shapes.push_back(exitButton);
     drawnElements[1].push_back(exitButton);
 
-    button = new interactible;
-    button->element = exitButton;
-    button->action = 'e';
-
-    interactibles.push_back(button);
+    interactables[exitButton] = 'e';
 
     exitButton->setFillColor(sf::Color(163, 163, 163, 255));
 
@@ -217,9 +232,104 @@ void GameGraphics::titleScreen() {
     exitButtonText->setOrigin(exitButtonText->getLocalBounds().width / 2, exitButtonText->getLocalBounds().height/ 2);
     exitButtonText->setPosition(exitButton->getPosition().x, exitButton->getPosition().y - 10);
 
+    CardDeck *displayDeck = new CardDeck;
+    displayDeck->shuffle();
+    vector<int> displayCards;
+
+    for (int i = 0; i < 6; i++) {
+        sf::Texture *texture = new sf::Texture;
+
+        displayCards.push_back(displayDeck->draw());
+        texture->loadFromFile(getCardNameModified(displayCards.back()));
+
+        sf::Sprite *card = new sf::Sprite(*texture);
+
+        textures.push_back(texture);
+        sprites.push_back(card);
+    }
+
+    delete displayDeck;
+    for (size_t i = 0; i < sprites.size(); i++) {
+        sprites[i]->setOrigin(sprites[i]->getLocalBounds().width / 2, sprites[i]->getLocalBounds().height / 2);
+        sprites[i]->setScale(2,2);
+
+        if (i < sprites.size() / 2) {
+            sprites[i]->setPosition(exitButton->getPosition().x - 474, exitButton->getPosition().y);
+        }   else {
+            sprites[i]->setPosition(exitButton->getPosition().x + 350, exitButton->getPosition().y);
+        }
+
+        sprites[i]->setOrigin(0, sprites[i]->getLocalBounds().height);
+        sprites[i]->rotate((350) + (15 * (i % 3)));
+
+        drawnElements[2].push_back(sprites[i]);
+    }
+
     return;
 }
 
 void GameGraphics::playScreen() {
+
+    clearWindow();
+    drawnElements.resize(3);    // table cards, player hand, interface, cpu hands
+
+    CardDeck *testDeck = new CardDeck();
+
+    testDeck->shuffle();
+
+    vector<int> tableCards;
+    sf::Sprite *card;
+    sf::Texture *texture;
+    string cardName;
+
+    for (int i = 0; i < 5; i++) {
+        tableCards.push_back(testDeck->draw());
+
+        cardName = getCardNameModified(tableCards.back());
+
+        texture = new sf::Texture;
+
+        textures.push_back(texture);
+        texture->loadFromFile(cardName);
+        card = new sf::Sprite(*texture);
+        card->setScale({2.5,2.5});
+
+        card->setOrigin(card->getLocalBounds().width / 2, card->getLocalBounds().height / 2);
+        if (drawnElements[0].size() == 0) {
+            card->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 2);
+        } else {
+            card->setPosition(sprites.back()->getPosition().x + 25, sprites.back()->getPosition().y);
+        }
+
+        sprites.push_back(card);
+        drawnElements[0].push_back(card);
+    }
+
+    vector<int> playerCards;
+
+    for (int i = 0; i < 2; i++) {
+        playerCards.push_back(testDeck->draw());
+
+        cardName = getCardNameModified(playerCards.back());
+
+        texture = new sf::Texture;
+
+        textures.push_back(texture);
+        texture->loadFromFile(cardName);
+        card = new sf::Sprite(*texture);
+        card->setScale({2.5,2.5});
+
+        card->setOrigin(card->getLocalBounds().width / 2, card->getLocalBounds().height / 2);
+        if (drawnElements[1].size() == 0) {
+            card->setPosition(currentWindowSize.x - 300, currentWindowSize.y - 150);
+        } else {
+            card->setPosition(sprites.back()->getPosition().x + (sprites.back()->getLocalBounds().width)*2.5 + 25, sprites.back()->getPosition().y);      // mult localBounds by 2 because of scale factor
+        }
+
+        sprites.push_back(card);
+        drawnElements[1].push_back(card);
+    }
+
+
     return;
 }

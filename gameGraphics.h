@@ -27,11 +27,11 @@ class GameGraphics {
         sf::Vector2u currentWindowSize;
         sf::Font font;
 
-        struct interactible;
-
         std::vector<sf::Text*> texts;
         std::vector<sf::Shape*> shapes;
-        std::vector<struct interactible*> interactibles;
+        std::vector<sf::Sprite*> sprites;
+        std::vector<sf::Texture*> textures;
+        std::map<sf::Shape*,char> interactables;
         std::vector<std::vector<sf::Drawable*>> drawnElements;   // 2D to allow element grouping (i.e., player's hand might be elements[2][0 through 5]). This allows addition and removal of elements without doing index math
 };
 

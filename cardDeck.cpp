@@ -18,6 +18,7 @@ CardDeck::CardDeck(int numDecks) {
 
 void CardDeck::shuffle() {
     vector<int> shuffledDeck;
+    srand(time(0));
 
     while (deck.size() > 0) {
         int randElement = rand()%deck.size();
