@@ -6,7 +6,7 @@ using namespace std;
 
 // constructor, init values that don't change (window object, font object)
 GameGraphics::GameGraphics() {
-    window.create(sf::VideoMode(1200, 900), "Pixel Poker");
+    window.create(sf::VideoMode(1920 * 0.75, 1080 * 0.75), "Pixel Poker");
     window.setVerticalSyncEnabled(false);
     window.setFramerateLimit(144);
 
@@ -69,18 +69,26 @@ void GameGraphics::closeWindow() {
 // function for scaling texts, shapes, and sprites correctly when the window size changes.
 void GameGraphics::resizeWindow(sf::Event resize) {
     sf::Vector2u newWindowSize(resize.size.width, resize.size.height);
-    sf::Vector2f scaleFactor((float)newWindowSize.x/currentWindowSize.x, (float)newWindowSize.y/currentWindowSize.y);
+    sf::Vector2f scaleFactor((float)newWindowSize.x/currentWindowSize.x, (float)newWindowSize.x/currentWindowSize.x);
 
+
+    sf::Vector2f oldPosition, oldScale;
     // these loops are why we need texts, shapes, and sprites. drawnElements->getPosition() isn't a valid function call because drawnElements is sf::Drawable*, not specific drawable classes
     for (size_t i = 0; i < texts.size(); i++) {
-        sf::Vector2f oldPosition = texts[i]->getPosition();
+        oldPosition = texts[i]->getPosition();
+        oldScale = texts[i]->getScale();
         texts[i]->setPosition(oldPosition.x * scaleFactor.x, oldPosition.y * scaleFactor.y);
+        texts[i]->setScale(oldScale.x * scaleFactor.x, oldScale.y * scaleFactor.y);
     } for (size_t i = 0; i < shapes.size(); i++) {
-        sf::Vector2f oldPosition = shapes[i]->getPosition();
+        oldPosition = shapes[i]->getPosition();
+        oldScale = shapes[i]->getScale();
         shapes[i]->setPosition(oldPosition.x * scaleFactor.x, oldPosition.y * scaleFactor.y);
+        shapes[i]->setScale(oldScale.x * scaleFactor.x, oldScale.y * scaleFactor.y);
     } for (size_t i = 0; i < sprites.size(); i++) {
-        sf::Vector2f oldPosition = sprites[i]->getPosition();
+        oldPosition = sprites[i]->getPosition();
+        oldScale = sprites[i]->getScale();
         sprites[i]->setPosition(oldPosition.x * scaleFactor.x, oldPosition.y * scaleFactor.y);
+        sprites[i]->setScale(oldScale.x * scaleFactor.x, oldScale.y * scaleFactor.y);
     }
 
     // https://www.sfml-dev.org/tutorials/2.2/graphics-view.php#showing-more-when-the-window-is-resized
@@ -343,8 +351,108 @@ void GameGraphics::playScreen() {
         drawnElements[1].push_back(card);
     }
 
-    
+    sf::RectangleShape *betIndicator = new sf::RectangleShape(sf::Vector2f(200, 100));
+    shapes.push_back(betIndicator);
+    drawnElements[2].push_back(betIndicator);
 
+    interactables[betIndicator] = 'b';
+
+    betIndicator->setFillColor(sf::Color::Black);
+
+    betIndicator->setOrigin(0, betIndicator->getLocalBounds().height / 2);
+    betIndicator->setPosition(25, currentWindowSize.y - 100);
+
+    sf::Text *betIndicatorText = new sf::Text;
+    texts.push_back(betIndicatorText);
+    drawnElements[2].push_back(betIndicatorText);
+
+    betIndicatorText->setFont(font);
+    betIndicatorText->setString("PLACEHOLDER");
+    betIndicatorText->setCharacterSize(50);
+    betIndicatorText->setFillColor(sf::Color::White);
+
+    betIndicatorText->setOrigin(betIndicatorText->getLocalBounds().width / 2, betIndicatorText->getLocalBounds().height / 2);
+    betIndicatorText->setPosition(betIndicator->getPosition().x + betIndicator->getLocalBounds().width/2, betIndicator->getPosition().y - 10);
+
+    sf::Text *totalChipsText = new sf::Text;
+    texts.push_back(totalChipsText);
+    drawnElements[2].push_back(totalChipsText);
+
+    totalChipsText->setFont(font);
+    totalChipsText->setString("YOUR CHIPS: PLACEHOLDER");
+    totalChipsText->setCharacterSize(50);
+    totalChipsText->setFillColor(sf::Color::White);
+
+    totalChipsText->setOrigin(0, totalChipsText->getLocalBounds().height);
+    totalChipsText->setPosition(betIndicator->getPosition().x, betIndicator->getPosition().y - betIndicator->getSize().y / 2 - 40);
+
+    sf::RectangleShape *betDecrement = new sf::RectangleShape(sf::Vector2f(45,45));
+    shapes.push_back(betDecrement);
+    drawnElements[2].push_back(betDecrement);
+
+    interactables[betDecrement] = 'i';
+
+    betDecrement->setFillColor(sf::Color::Black);
+
+    betDecrement->setOrigin(0, betDecrement->getLocalBounds().height);
+    betDecrement->setPosition(25 + betIndicator->getPosition().x + betIndicator->getSize().x, betIndicator->getPosition().y + betIndicator->getSize().y / 2);
+
+    sf::RectangleShape *betIncrement = new sf::RectangleShape(betDecrement->getSize());
+    shapes.push_back(betIncrement);
+    drawnElements[2].push_back(betIncrement);
+
+    interactables[betIncrement] = 'd';
+
+    betIncrement->setFillColor(sf::Color::Black);
+
+    betIncrement->setOrigin(0, betIncrement->getLocalBounds().height);
+    betIncrement->setPosition(betDecrement->getPosition().x, betDecrement->getPosition().y - betDecrement->getSize().y - 10);
+
+    sf::RectangleShape *betButton = new sf::RectangleShape(betIndicator->getSize());
+    shapes.push_back(betButton);
+    drawnElements[2].push_back(betButton);
+
+    interactables[betButton] = 'b';
+
+    betButton->setFillColor(sf::Color(163, 163, 163, 255));
+
+    betButton->setOrigin(betButton->getLocalBounds().width / 2, betButton->getLocalBounds().height / 2);
+    betButton->setPosition(betIncrement->getPosition().x + betIncrement->getSize().x + 50 + betButton->getSize().x / 2, betIndicator->getPosition().y);
+
+    sf::Text *betButtonText = new sf::Text;
+    texts.push_back(betButtonText);
+    drawnElements[2].push_back(betButtonText);
+
+    betButtonText->setFont(font);
+    betButtonText->setString("Call");
+    betButtonText->setCharacterSize(50);
+    betButtonText->setFillColor(sf::Color::White);
+
+    betButtonText->setOrigin(betButtonText->getLocalBounds().width / 2, betButtonText->getLocalBounds().height / 2);
+    betButtonText->setPosition(betButton->getPosition().x, betButton->getPosition().y - 10);
+
+    sf::RectangleShape *foldButton = new sf::RectangleShape(betIndicator->getSize());
+    shapes.push_back(foldButton);
+    drawnElements[2].push_back(foldButton);
+
+    interactables[foldButton] = 'f';
+
+    foldButton->setFillColor(sf::Color(163, 163, 163, 255));
+
+    foldButton->setOrigin(foldButton->getLocalBounds().width / 2, foldButton->getLocalBounds().height / 2);
+    foldButton->setPosition(betButton->getPosition().x + betButton->getSize().x + 25, betIndicator->getPosition().y);
+
+    sf::Text *foldButtonText = new sf::Text;
+    texts.push_back(foldButtonText);
+    drawnElements[2].push_back(foldButtonText);
+
+    foldButtonText->setFont(font);
+    foldButtonText->setString("Fold");
+    foldButtonText->setCharacterSize(50);
+    foldButtonText->setFillColor(sf::Color::White);
+
+    foldButtonText->setOrigin(foldButtonText->getLocalBounds().width / 2, foldButtonText->getLocalBounds().height / 2);
+    foldButtonText->setPosition(foldButton->getPosition().x, foldButton->getPosition().y - 10);
 
     return;
 }
