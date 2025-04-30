@@ -4,10 +4,10 @@ bool GameState::aiShouldFold(int player)
     float potOdds = calculatePotOdds(player);           
 
     // Decision tree:
-    if (handStrength > 0.7f) 
+    if (handStrength > 0.7) 
     {
         return false; // Raise 
-    } else if (potOdds > 0.4f) 
+    } else if (potOdds > 0.4) 
     {
         return false; // Call
     } else {
@@ -23,9 +23,9 @@ int GameState::aiChosenBet(int player)
     if (handStrength > 0.7f) 
     {
         // Raise by 20% of pot
-        int raiseAmount = static_cast<int>(getPotSize() * 0.20f);
+        int raiseAmount = static_cast<int>(getPotSize() * 0.20);
         return currentBet + raiseAmount;
-    } else if (potOdds > 0.4f) 
+    } else if (potOdds > 0.4) 
     {
         // Just call
         return currentBet;
