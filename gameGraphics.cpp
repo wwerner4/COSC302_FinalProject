@@ -1,7 +1,8 @@
 #include "gameGraphics.h"
-#include "cardDeck.h"
 
 #include <iostream>
+
+#include "cardDeck.h"
 using namespace std;
 
 // constructor, init values that don't change (window object, font object)
@@ -69,8 +70,7 @@ void GameGraphics::closeWindow() {
 // function for scaling texts, shapes, and sprites correctly when the window size changes.
 void GameGraphics::resizeWindow(sf::Event resize) {
     sf::Vector2u newWindowSize(resize.size.width, resize.size.height);
-    sf::Vector2f scaleFactor((float)newWindowSize.x/currentWindowSize.x, (float)newWindowSize.x/currentWindowSize.x);
-
+    sf::Vector2f scaleFactor((float)newWindowSize.x / currentWindowSize.x, (float)newWindowSize.x / currentWindowSize.x);
 
     sf::Vector2f oldPosition, oldScale;
     // these loops are why we need texts, shapes, and sprites. drawnElements->getPosition() isn't a valid function call because drawnElements is sf::Drawable*, not specific drawable classes
@@ -79,12 +79,14 @@ void GameGraphics::resizeWindow(sf::Event resize) {
         oldScale = texts[i]->getScale();
         texts[i]->setPosition(oldPosition.x * scaleFactor.x, oldPosition.y * scaleFactor.y);
         texts[i]->setScale(oldScale.x * scaleFactor.x, oldScale.y * scaleFactor.y);
-    } for (size_t i = 0; i < shapes.size(); i++) {
+    }
+    for (size_t i = 0; i < shapes.size(); i++) {
         oldPosition = shapes[i]->getPosition();
         oldScale = shapes[i]->getScale();
         shapes[i]->setPosition(oldPosition.x * scaleFactor.x, oldPosition.y * scaleFactor.y);
         shapes[i]->setScale(oldScale.x * scaleFactor.x, oldScale.y * scaleFactor.y);
-    } for (size_t i = 0; i < sprites.size(); i++) {
+    }
+    for (size_t i = 0; i < sprites.size(); i++) {
         oldPosition = sprites[i]->getPosition();
         oldScale = sprites[i]->getScale();
         sprites[i]->setPosition(oldPosition.x * scaleFactor.x, oldPosition.y * scaleFactor.y);
@@ -105,12 +107,10 @@ void GameGraphics::onClick() {
     sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
     sf::Vector2f floatMousePos((float)mousePosition.x, (float)mousePosition.y);
 
-    for (map<sf::Shape*,char>::iterator i = interactables.begin(); i != interactables.end(); i++) {
-
+    for (map<sf::Shape *, char>::iterator i = interactables.begin(); i != interactables.end(); i++) {
         sf::FloatRect interactableBounds = i->first->getGlobalBounds();
         if (interactableBounds.contains(floatMousePos)) {
-
-            switch(i->second) {
+            switch (i->second) {
                 case 'p':
                     playScreen();
                     return;
@@ -161,7 +161,7 @@ void GameGraphics::testScreen() {
     rect->setFillColor(sf::Color::Black);
 
     text->setPosition(window.getSize().x / 2, window.getSize().y / 2);
-    rect->setPosition(window.getSize().x / 2, window.getSize().y / 2 +20);
+    rect->setPosition(window.getSize().x / 2, window.getSize().y / 2 + 20);
 
     drawnElements[0].push_back(rect);
     drawnElements[0].push_back(text);
@@ -170,23 +170,19 @@ void GameGraphics::testScreen() {
 }
 
 // we should probably change getCardName in /CardEvaluation to fit this syntax (to associate card ints with textures in /data/PixelPlayingCardsPack), but my modifications live here for now
-string getCardNameModified(int cardValue) 
-{
-    if (cardValue < 0 || cardValue > 51) 
-    {
+string getCardNameModified(int cardValue) {
+    if (cardValue < 0 || cardValue > 51) {
         return "Invalid Card";
     }
 
-    const vector<string> ranks = 
-    {
-        "ace", "2", "3", "4", "5", "6", "7", "8", 
-        "9", "10", "jack", "queen", "king"
-    };
+    const vector<string> ranks =
+        {
+            "ace", "2", "3", "4", "5", "6", "7", "8",
+            "9", "10", "jack", "queen", "king"};
 
-    const vector<string> suits = 
-    {
-        "hearts", "diamonds", "clubs", "spades"
-    };
+    const vector<string> suits =
+        {
+            "hearts", "diamonds", "clubs", "spades"};
 
     return "./data/PixelPlayingCardsPack/" + ranks[cardValue % 13] + "_" + suits[cardValue / 13] + "_white.png";
 }
@@ -228,7 +224,7 @@ void GameGraphics::titleScreen() {
     playButtonText->setCharacterSize(50);
     playButtonText->setFillColor(sf::Color::White);
 
-    playButtonText->setOrigin(playButtonText->getLocalBounds().width / 2, playButtonText->getLocalBounds().height/ 2);
+    playButtonText->setOrigin(playButtonText->getLocalBounds().width / 2, playButtonText->getLocalBounds().height / 2);
     playButtonText->setPosition(playButton->getPosition().x, playButton->getPosition().y - 10);
 
     sf::RectangleShape *exitButton = new sf::RectangleShape(sf::Vector2f(500, 75));
@@ -251,7 +247,7 @@ void GameGraphics::titleScreen() {
     exitButtonText->setCharacterSize(50);
     exitButtonText->setFillColor(sf::Color::White);
 
-    exitButtonText->setOrigin(exitButtonText->getLocalBounds().width / 2, exitButtonText->getLocalBounds().height/ 2);
+    exitButtonText->setOrigin(exitButtonText->getLocalBounds().width / 2, exitButtonText->getLocalBounds().height / 2);
     exitButtonText->setPosition(exitButton->getPosition().x, exitButton->getPosition().y - 10);
 
     CardDeck *displayDeck = new CardDeck;
@@ -273,11 +269,11 @@ void GameGraphics::titleScreen() {
     delete displayDeck;
     for (size_t i = 0; i < sprites.size(); i++) {
         sprites[i]->setOrigin(sprites[i]->getLocalBounds().width / 2, sprites[i]->getLocalBounds().height / 2);
-        sprites[i]->setScale(2,2);
+        sprites[i]->setScale(2, 2);
 
         if (i < sprites.size() / 2) {
             sprites[i]->setPosition(exitButton->getPosition().x - 474, exitButton->getPosition().y);
-        }   else {
+        } else {
             sprites[i]->setPosition(exitButton->getPosition().x + 350, exitButton->getPosition().y);
         }
 
@@ -292,9 +288,8 @@ void GameGraphics::titleScreen() {
 
 // build the initial main game scene, currently just a layout
 void GameGraphics::playScreen() {
-
     clearWindow();
-    drawnElements.resize(4);    // table cards, player hand, interface, cpu hands
+    drawnElements.resize(4);  // table cards, player hand, interface, cpu hands
 
     CardDeck *testDeck = new CardDeck();
 
@@ -316,10 +311,10 @@ void GameGraphics::playScreen() {
         textures.push_back(texture);
         texture->loadFromFile(cardName);
         card = new sf::Sprite(*texture);
-        card->setScale(2,2);
+        card->setScale(2, 2);
 
         card->setOrigin(card->getLocalBounds().width / 2, card->getLocalBounds().height / 2);
-        card->setPosition(currentWindowSize.x / 2 + ((card->getLocalBounds().width*card->getScale().x) + 25)*(i - 2), currentWindowSize.y / 2);
+        card->setPosition(currentWindowSize.x / 2 + ((card->getLocalBounds().width * card->getScale().x) + 25) * (i - 2), currentWindowSize.y / 2);
 
         sprites.push_back(card);
         drawnElements[0].push_back(card);
@@ -338,13 +333,13 @@ void GameGraphics::playScreen() {
         textures.push_back(texture);
         texture->loadFromFile(cardName);
         card = new sf::Sprite(*texture);
-        card->setScale({2.5,2.5});
+        card->setScale({2.5, 2.5});
 
         card->setOrigin(card->getLocalBounds().width / 2, card->getLocalBounds().height / 2);
         if (drawnElements[1].size() == 0) {
             card->setPosition(currentWindowSize.x - 300, currentWindowSize.y - 150);
         } else {
-            card->setPosition(sprites.back()->getPosition().x + (sprites.back()->getLocalBounds().width)*card->getScale().x + 25, sprites.back()->getPosition().y);      // mult localBounds by 2 because of scale factor
+            card->setPosition(sprites.back()->getPosition().x + (sprites.back()->getLocalBounds().width) * card->getScale().x + 25, sprites.back()->getPosition().y);  // mult localBounds by 2 because of scale factor
         }
 
         sprites.push_back(card);
@@ -372,7 +367,7 @@ void GameGraphics::playScreen() {
     betIndicatorText->setFillColor(sf::Color::White);
 
     betIndicatorText->setOrigin(betIndicatorText->getLocalBounds().width / 2, betIndicatorText->getLocalBounds().height / 2);
-    betIndicatorText->setPosition(betIndicator->getPosition().x + betIndicator->getLocalBounds().width/2, betIndicator->getPosition().y - 10);
+    betIndicatorText->setPosition(betIndicator->getPosition().x + betIndicator->getLocalBounds().width / 2, betIndicator->getPosition().y - 10);
 
     sf::Text *totalChipsText = new sf::Text;
     texts.push_back(totalChipsText);
@@ -386,27 +381,49 @@ void GameGraphics::playScreen() {
     totalChipsText->setOrigin(0, totalChipsText->getLocalBounds().height);
     totalChipsText->setPosition(betIndicator->getPosition().x, betIndicator->getPosition().y - betIndicator->getSize().y / 2 - 40);
 
-    sf::RectangleShape *betDecrement = new sf::RectangleShape(sf::Vector2f(45,45));
+    sf::RectangleShape *betDecrement = new sf::RectangleShape(sf::Vector2f(45, 45));
     shapes.push_back(betDecrement);
     drawnElements[2].push_back(betDecrement);
 
-    interactables[betDecrement] = 'i';
+    interactables[betDecrement] = 'd';
 
-    betDecrement->setFillColor(sf::Color::Black);
+    betDecrement->setFillColor(sf::Color(163, 163, 163, 255));
 
     betDecrement->setOrigin(0, betDecrement->getLocalBounds().height);
     betDecrement->setPosition(25 + betIndicator->getPosition().x + betIndicator->getSize().x, betIndicator->getPosition().y + betIndicator->getSize().y / 2);
+
+    sf::VertexArray *decrementTriangle = new sf::VertexArray(sf::Triangles, 3);
+
+    decrementTriangle[0][0].position = sf::Vector2f(betDecrement->getPosition().x + 5, betDecrement->getPosition().y - betDecrement->getSize().y + 5);
+    decrementTriangle[0][0].color = sf::Color::White;
+    decrementTriangle[0][1].position = sf::Vector2f(betDecrement->getPosition().x + betDecrement->getSize().x / 2, betDecrement->getPosition().y - 5);
+    decrementTriangle[0][1].color = sf::Color::White;
+    decrementTriangle[0][2].position = sf::Vector2f(betDecrement->getPosition().x + betDecrement->getSize().x - 5, betDecrement->getPosition().y - betDecrement->getSize().y + 5);
+    decrementTriangle[0][2].color = sf::Color::White;
+
+    drawnElements[2].push_back(decrementTriangle);
 
     sf::RectangleShape *betIncrement = new sf::RectangleShape(betDecrement->getSize());
     shapes.push_back(betIncrement);
     drawnElements[2].push_back(betIncrement);
 
-    interactables[betIncrement] = 'd';
+    interactables[betIncrement] = 'i';
 
-    betIncrement->setFillColor(sf::Color::Black);
+    betIncrement->setFillColor(sf::Color(163, 163, 163, 255));
 
     betIncrement->setOrigin(0, betIncrement->getLocalBounds().height);
     betIncrement->setPosition(betDecrement->getPosition().x, betDecrement->getPosition().y - betDecrement->getSize().y - 10);
+
+    sf::VertexArray *incrementTriangle = new sf::VertexArray(sf::Triangles, 3);
+
+    incrementTriangle[0][0].position = sf::Vector2f(betIncrement->getPosition().x + 5, betIncrement->getPosition().y - 5);
+    incrementTriangle[0][0].color = sf::Color::White;
+    incrementTriangle[0][1].position = sf::Vector2f(betIncrement->getPosition().x + betIncrement->getSize().x / 2, betIncrement->getPosition().y - betIncrement->getSize().y + 5);
+    incrementTriangle[0][1].color = sf::Color::White;
+    incrementTriangle[0][2].position = sf::Vector2f(betIncrement->getPosition().x + betIncrement->getSize().x - 5, betIncrement->getPosition().y - 5);
+    incrementTriangle[0][2].color = sf::Color::White;
+
+    drawnElements[2].push_back(incrementTriangle);
 
     sf::RectangleShape *betButton = new sf::RectangleShape(betIndicator->getSize());
     shapes.push_back(betButton);
@@ -453,6 +470,40 @@ void GameGraphics::playScreen() {
 
     foldButtonText->setOrigin(foldButtonText->getLocalBounds().width / 2, foldButtonText->getLocalBounds().height / 2);
     foldButtonText->setPosition(foldButton->getPosition().x, foldButton->getPosition().y - 10);
+
+    int numOpponents = 3;
+
+    for (int i = 0; i < numOpponents; i++) {
+        for (int j = 0; j < 2; j++) {
+            texture = new sf::Texture;
+
+            textures.push_back(texture);
+            texture->loadFromFile("./data/PixelPlayingCardsPack/back_red_basic_white.png");
+            card = new sf::Sprite(*texture);
+            card->setScale({1.5, 1.5});
+
+            if (drawnElements[3].size() % 2 == 0) {
+                card->setPosition((currentWindowSize.x / numOpponents) * i + (currentWindowSize.x / (numOpponents * 2)) - (card->getLocalBounds().width + 25) / 2, 25);
+            } else {
+                card->setPosition(sprites.back()->getPosition().x + 25, sprites.back()->getPosition().y);  // mult localBounds by 2 because of scale factor
+            }
+
+            sprites.push_back(card);
+            drawnElements[3].push_back(card);
+        }
+
+        sf::Text *cpu = new sf::Text;
+        texts.push_back(cpu);
+    drawnElements[2].push_back(cpu);
+
+    cpu->setFont(font);
+    cpu->setString("PLACEHOLDER");
+    cpu->setCharacterSize(20);
+    cpu->setFillColor(sf::Color::White);
+
+    cpu->setOrigin(cpu->getLocalBounds().width / 2, cpu->getLocalBounds().height / 2);
+    cpu->setPosition((currentWindowSize.x / numOpponents) * i + (currentWindowSize.x / (numOpponents * 2)), 10 + cpu->getLocalBounds().height/2 + sprites.back()->getPosition().y + (sprites.back()->getLocalBounds().height)*sprites.back()->getScale().y);
+    }
 
     return;
 }
