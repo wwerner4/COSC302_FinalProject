@@ -3,10 +3,45 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "cardDeck.h"
+
+class GameState {
+    public:
+    GameState();
+
+    bool playingGame;
+
+    int gameStage;
+    int pot;
+    int smallBlind;
+    int bigBlind;
+    int dealer;
+    int numPlayers = 4;
+    int turn;
+
+    CardDeck *deck;
+    
+    std::vector<int> bets;      // [0] == player
+    std::vector<int> chips;
+    std::vector<bool> folds;
+    std::vector<std::vector<int>> hands;
+    std::vector<int> table;
+
+    void bet(int);
+    void UserBet();
+    void resetBets();
+
+    void gameBegin();
+    void checkState();
+    void newStage();
+    int determineWinner();
+
+};
+
 
 class GameGraphics {
     public:
-        GameGraphics();
+        GameGraphics(GameState*);
         ~GameGraphics();
 
         sf::RenderWindow window;
@@ -14,6 +49,8 @@ class GameGraphics {
         void titleScreen();
         void playScreen();
         void testScreen();
+
+        void matchGameState();
 
         void loopDraw();
         void resizeWindow(sf::Event);
@@ -24,8 +61,16 @@ class GameGraphics {
     private:
 
         void clearWindow();
+        void incBet();
+        void decBet();
+        void userBet();
+
         sf::Vector2u currentWindowSize;
         sf::Font font;
+
+        GameState *state;
+        int playerBet;
+        int minBet;
 
         // I'm storing texts, shapes, sprites, and textures as well as drawnElements. This is double storage, but sf::Drawable is a virtual class so I can't call all of an object's functions from drawnElements
         std::vector<sf::Text*> texts;

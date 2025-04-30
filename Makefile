@@ -4,7 +4,7 @@ CXXFLAGS=	-g -Wall -std=gnu++11
 LDFLAGS=	
 SHELL=		bash
 PROGRAMS=	playGame
-SOURCES=	playGame.cpp cardDeck.cpp gameGraphics.cpp
+SOURCES=	playGame.cpp cardDeck.cpp gameGraphics.cpp gameState.cpp
 OBJECTS=	$(SOURCES:.cpp=.o)
 
 all:		$(PROGRAMS)
