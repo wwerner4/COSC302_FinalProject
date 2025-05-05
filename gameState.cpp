@@ -3,7 +3,9 @@
 #include <iostream>
 
 #include "cardDeck.h"
+#include "cardEvaluation/handEvaluator.h"
 #include "gameGraphics.h"
+//#include "ai.h"
 using namespace std;
 
 GameState::GameState() {
@@ -173,6 +175,7 @@ void GameState::checkState() {
             turn = (turn + 1) % numPlayers;
         }
     } else {
+        cout << "ibet: " << turn << endl;
         bet(turn);
     }
 
@@ -224,7 +227,6 @@ void GameState::newStage() {
         int winner = determineWinner();
         chips[winner] += pot;
 
-        game->endScreen();
         sleep(5);
         gameBegin();
     }
@@ -232,6 +234,47 @@ void GameState::newStage() {
     return;
 }
 
-int GameState::determineWinner() {
-    return 0;
+int GameState::determineWinner() 
+{
+    vector<vector<int>> thePlayerHands;
+    vector<int> thePlayersInTheGame;
+    vector<string> hands; 
+
+
+    for(int i = 0; i < numPlayers; i++)
+    {
+        // only adding the current players that havent folded
+        if(!folds[i])
+        {
+            vector<int> fullHand = hands[i];
+            fullHand.insert(fullHand.end(), table.begin(), table.end());
+            activePlayerHands.push_back(fullHand);
+            activePlayers.push_back(i);
+        }
+    }
+    // we got all the hands in thePlayerHands now that are still in tehg ame
+    for(size_t i = 0; i < thePlayerHands.size(); i++)
+    {
+        hands.push_back(evaluateHand(thePlayerHands[i]));
+    }
+    // -1 is me placeholder value
+    int bestRank = -1;
+
+    // find the best ranking hand
+    for(size_t i = 0; i < hands.size(); i++)
+    {
+        int rank = handRank(hands[i]);
+        if(rank > bestRank)
+        {
+            bestRank = rank;
+        }
+    }
+
+    // now get the highest value of the best ranking hand (since there could be multiple of same best hand type)
+    // vector<
+    // for(size_t j = 0; j < hands.size(); j++)
+    // {
+
+    // }
+    // return 0;
 }
