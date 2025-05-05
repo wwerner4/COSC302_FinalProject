@@ -11,6 +11,7 @@ int main() {
     // GameGraphics class holds all visual elements and controls interactible elements that call other functions
     GameState *state = new GameState();
     GameGraphics *game = new GameGraphics(state);
+    state->game = game;
 
     game->titleScreen();
 

@@ -173,7 +173,6 @@ void GameState::checkState() {
             turn = (turn + 1) % numPlayers;
         }
     } else {
-        cout << "ibet: " << turn << endl;
         bet(turn);
     }
 
@@ -225,6 +224,7 @@ void GameState::newStage() {
         int winner = determineWinner();
         chips[winner] += pot;
 
+        game->endScreen();
         sleep(5);
         gameBegin();
     }

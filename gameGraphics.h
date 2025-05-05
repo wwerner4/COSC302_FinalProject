@@ -6,6 +6,8 @@
 
 #include "cardDeck.h"
 
+class GameGraphics;
+
 class GameState {
    public:
     GameState();
@@ -22,6 +24,7 @@ class GameState {
     int turn;
 
     CardDeck *deck;
+    GameGraphics *game;
 
     std::vector<int> bets;  // [0] == player
     std::vector<int> chips;
@@ -53,6 +56,7 @@ class GameGraphics {
     void titleScreen();
     void playScreen();
     void testScreen();
+    void endScreen();
 
     void matchGameState();
 

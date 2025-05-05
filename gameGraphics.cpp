@@ -1,6 +1,7 @@
 #include "gameGraphics.h"
 
 #include <iostream>
+#include <unistd.h>
 
 #include "CardEvaluation/cardNames.h"
 #include "cardDeck.h"
@@ -469,6 +470,56 @@ void GameGraphics::matchGameState() {
             cpuFoldIndicator->setPosition(((currentWindowSize.x / (state->numPlayers - 1)) * (i - 1)) + (currentWindowSize.x / ((state->numPlayers - 1) * 2)), 75);
         }
     }
+
+    if (state->gameStage == 4) {
+        endScreen();
+    }
+
+    return;
+}
+
+// https://en.sfml-dev.org/forums/index.php?topic=22496.0
+void GameGraphics::endScreen() {
+    cout << "endScreen" << endl;
+
+    cout << textures.size() << endl;
+    cout << sprites.size() << endl;
+    cout << endl;
+
+    int indexStart = textures.size() - ((state->numPlayers - 1)*2);
+    for (int i = 1; i < state->numPlayers; i++) {
+        if(!state->folds[i]) {
+            for (int j = 0; j < 2; j++) {
+                cout << state->hands[i][j] << ", ";
+                sf::Texture *texture = textures[indexStart + (i-1)*2 + j];
+
+                string newTexture = getCardName(state->hands[i][j]);
+                texture = new sf::Texture;
+                texture->loadFromFile(newTexture);
+
+                sprites[indexStart + (i-1)*2 + j]->setTexture(*texture);
+            }
+            cout << endl;
+        }
+    }
+
+    sf::Text *win = new sf::Text;
+            texts.push_back(win);
+            drawnElements[2].push_back(win);
+
+            win->setFont(font);
+            if (state->determineWinner() == 0) {
+                win->setString("You won this hand");
+            } else {
+                win->setString("CPU" + to_string(state->determineWinner()) + " won this hand");
+            }
+            win->setCharacterSize(100);
+            win->setFillColor(sf::Color::White);
+
+            win->setOrigin(win->getLocalBounds().width / 2, win->getLocalBounds().height / 2);
+            win->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 2 - 165);
+
+    loopDraw();
 
     return;
 }
