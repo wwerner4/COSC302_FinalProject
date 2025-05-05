@@ -3,10 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+
 #include "cardDeck.h"
 
 class GameState {
-    public:
+   public:
     GameState();
 
     bool playingGame;
@@ -17,18 +18,19 @@ class GameState {
     int bigBlind;
     int dealer;
     int numPlayers = 4;
+    int checkBet;
     int turn;
 
     CardDeck *deck;
-    
-    std::vector<int> bets;      // [0] == player
+
+    std::vector<int> bets;  // [0] == player
     std::vector<int> chips;
     std::vector<bool> folds;
+    std::vector<bool> hasBet;
     std::vector<std::vector<int>> hands;
     std::vector<int> table;
 
     void bet(int);
-    void UserBet();
     void resetBets();
 
     void gameBegin();
@@ -36,49 +38,49 @@ class GameState {
     void newStage();
     int determineWinner();
 
+    int playerBet;
+    bool playerHasBet;
+    int minBet;
 };
 
-
 class GameGraphics {
-    public:
-        GameGraphics(GameState*);
-        ~GameGraphics();
+   public:
+    GameGraphics(GameState *);
+    ~GameGraphics();
 
-        sf::RenderWindow window;
+    sf::RenderWindow window;
 
-        void titleScreen();
-        void playScreen();
-        void testScreen();
+    void titleScreen();
+    void playScreen();
+    void testScreen();
 
-        void matchGameState();
+    void matchGameState();
 
-        void loopDraw();
-        void resizeWindow(sf::Event);
-        void closeWindow();
-        void onClick();
-        void eventHandler(sf::Event);
+    void loopDraw();
+    void resizeWindow(sf::Event);
+    void closeWindow();
+    void onClick();
+    void eventHandler(sf::Event);
 
-    private:
+   private:
+    void clearWindow();
+    void incBet();
+    void decBet();
+    void userBet();
+    void userFold();
 
-        void clearWindow();
-        void incBet();
-        void decBet();
-        void userBet();
+    sf::Vector2u currentWindowSize;
+    sf::Font font;
 
-        sf::Vector2u currentWindowSize;
-        sf::Font font;
+    GameState *state;
 
-        GameState *state;
-        int playerBet;
-        int minBet;
-
-        // I'm storing texts, shapes, sprites, and textures as well as drawnElements. This is double storage, but sf::Drawable is a virtual class so I can't call all of an object's functions from drawnElements
-        std::vector<sf::Text*> texts;
-        std::vector<sf::Shape*> shapes;
-        std::vector<sf::Sprite*> sprites;
-        std::vector<sf::Texture*> textures;
-        std::map<sf::Shape*,char> interactables;
-        std::vector<std::vector<sf::Drawable*>> drawnElements;   // 2D to allow element grouping (i.e., player's hand might be elements[2][0 through 5]). The order of elements in drawnElements is the order they are drawn in, which is important
+    // I'm storing texts, shapes, sprites, and textures as well as drawnElements. This is double storage, but sf::Drawable is a virtual class so I can't call all of an object's functions from drawnElements
+    std::vector<sf::Text *> texts;
+    std::vector<sf::Shape *> shapes;
+    std::vector<sf::Sprite *> sprites;
+    std::vector<sf::Texture *> textures;
+    std::map<sf::Shape *, char> interactables;
+    std::vector<std::vector<sf::Drawable *>> drawnElements;  // 2D to allow element grouping (i.e., player's hand might be elements[2][0 through 5]). The order of elements in drawnElements is the order they are drawn in, which is important
 };
 
 #endif

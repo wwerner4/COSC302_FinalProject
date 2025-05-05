@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include <iostream>
 
 #include "cardDeck.h"
@@ -6,15 +8,13 @@ using namespace std;
 
 GameState::GameState() {
     playingGame = false;
-    pot = 0;
     smallBlind = 100;
     bigBlind = 200;
     dealer = 3;
 
+    // AIGame *ai = new AIGame;
+
     chips.resize(numPlayers, 10000);
-    bets.resize(numPlayers, -1);
-    hands.resize(numPlayers);
-    folds.resize(numPlayers, false);
 }
 
 void GameState::bet(int player) {
@@ -23,42 +23,100 @@ void GameState::bet(int player) {
     }
 
     // if (aiShouldFold(player)) {
-    if (0) {
+    if (player == 1) {
         folds[player] = true;
+        turn = (turn + 1) % numPlayers;
+
+        sleep(1);
         return;
     }
 
     // bets[player] = aiChosenBet();
-    bets[player] = 200;
-    pot += bets[player];
-    chips[player] -= bets[player];
+    int newBet;
+    if (checkBet < 200) {
+        newBet = 200 - bets[player];
+    } else {
+        newBet = checkBet - bets[player];
+    }
+
+    pot += newBet;
+    chips[player] -= newBet;
+    bets[player] += newBet;
     turn = (turn + 1) % numPlayers;
+
+    if (bets[player] > checkBet) {
+        checkBet = bets[player];
+    }
+
+    hasBet[player] = true;
+
+    minBet = checkBet - bets[0];
+    if (minBet < 0) {
+        minBet = 0;
+    }
+
+    playerBet = minBet;
+    playerHasBet = false;
+
+    sleep(1);
+
     return;
 }
 
 void GameState::resetBets() {
     bets.clear();
-    bets.resize(numPlayers, -1);
+    bets.resize(numPlayers, 0);
+
+    hasBet.clear();
+    hasBet.resize(numPlayers, false);
+
+    return;
 }
 
 void GameState::gameBegin() {
     cout << "new hand" << endl;
     playingGame = true;
 
+    playerHasBet = false;
     gameStage = 0;
+    playerBet = 0;
+    checkBet = 0;
     dealer = (dealer + 1) % numPlayers;
 
     resetBets();
     bets[(dealer + 1) % numPlayers] = smallBlind;
     bets[(dealer + 2) % numPlayers] = bigBlind;
+    hasBet[(dealer + 1) % numPlayers] = true;
+    hasBet[(dealer + 2) % numPlayers] = true;
+
+    chips[(dealer + 1) % numPlayers] -= smallBlind;
+    chips[(dealer + 2) % numPlayers] -= bigBlind;
     turn = (dealer + 3) % numPlayers;
 
+    if ((dealer + 1) % numPlayers == 0) {
+        minBet = bigBlind - smallBlind;
+        playerBet = minBet;
+    } else if ((dealer + 2) % numPlayers == 0) {
+        minBet = 0;
+        playerBet = minBet;
+    } else {
+        minBet = bigBlind;
+        playerBet = minBet;
+    }
+
+    /*
     for (int i = 0 ; i < numPlayers; i ++) {
         cout << bets[i] << ", ";
     }
     cout << endl;
+    */
 
     pot = smallBlind + bigBlind;
+
+    table.clear();
+
+    folds.clear();
+    folds.resize(numPlayers, false);
 
     deck = new CardDeck(1);
     deck->shuffle();
@@ -70,52 +128,52 @@ void GameState::gameBegin() {
             hands[i].push_back(deck->draw());
         }
     }
-
-    table.clear();
-
-    folds.clear();
-    folds.resize(numPlayers, false);
 }
 
 void GameState::checkState() {
     int numFolds = 0;
 
-    vector<int> remainingPlayerBets;
     for (size_t i = 0; i < bets.size(); i++) {
         if (folds[i]) {
             numFolds++;
-        } else {
-            remainingPlayerBets.push_back(bets[i]);
         }
     }
 
     if (numFolds == numPlayers - 1) {
-        cout << "here" << endl;
         gameStage = 4;
         newStage();
         return;
     }
 
-    bool moveOn = true;
+    vector<bool> moveOn;
 
-    for (size_t i = 1; i < remainingPlayerBets.size(); i++) {
-        if (remainingPlayerBets[i - 1] != remainingPlayerBets[i] || remainingPlayerBets[i] == -1 || remainingPlayerBets[i - 1] == -1) {
-            moveOn = false;
+    for (size_t i = 0; i < bets.size(); i++) {
+        if ((bets[i] == checkBet && hasBet[i]) || folds[i]) {
+            moveOn.push_back(true);
         }
     }
 
-    if (moveOn) {
-        cout << "here" << endl;
+    if (moveOn.size() == (size_t)numPlayers) {
         gameStage = (gameStage + 1) % 5;
         newStage();
         return;
     }
 
     if (turn == 0) {
-        if (bets[0] != -1 || folds[0]) {
-            turn++;
+        if (playerHasBet || folds[0]) {
+
+            if (!folds[0]) {
+                hasBet[0] = true;
+            }
+
+            if (bets[0] > checkBet) {
+                checkBet = bets[0];
+            }
+
+            turn = (turn + 1) % numPlayers;
         }
     } else {
+        cout << "ibet: " << turn << endl;
         bet(turn);
     }
 
@@ -123,34 +181,54 @@ void GameState::checkState() {
 }
 
 void GameState::newStage() {
+    /*
+    cout << "gameStage: " << gameStage << endl;
+    cout << "checkBet: " << checkBet << endl;
+    for (size_t i = 0; i < bets.size(); i++) {
+        cout << bets[i] << ", ";
+    }
+    cout << endl;
+
+    for (size_t i = 0; i < hasBet.size(); i++) {
+        cout << hasBet[i] << ", ";
+    }
+    cout << endl;
+    */
+
+    sleep(1);
+
     if (gameStage == 1) {
         for (int i = 0; i < 3; i++) {
             table.push_back(deck->draw());
         }
 
-        /*
-        for (int i = 0; i < numPlayers; i++) {
-            cout << bets[0] << endl;
-        }
-            */
+        playerBet = 0;
+        checkBet = 0;
 
         resetBets();
     } else if (gameStage == 2) {
         table.push_back(deck->draw());
+
+        playerBet = 0;
+        checkBet = 0;
 
         resetBets();
     } else if (gameStage == 3) {
         table.push_back(deck->draw());
         delete deck;
 
+        playerBet = 0;
+        checkBet = 0;
+
         resetBets();
     } else {
         int winner = determineWinner();
         chips[winner] += pot;
+
+        sleep(5);
         gameBegin();
     }
 
-    cout << gameStage << endl;
     return;
 }
 
