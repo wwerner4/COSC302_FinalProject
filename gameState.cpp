@@ -30,7 +30,7 @@ void GameState::bet(int player)
     handIncludingCommunityCards.insert(handIncludingCommunityCards.end(), table.begin(), table.end());
     string handType = evaluateHand(handIncludingCommunityCards);
 
-    if (aiShouldFold(player, handType, checkBet, pot))
+    if (aiShouldFold(player, handType, minBet, pot, chips))
     {
         folds[player] = true;
         turn = (turn + 1) % numPlayers;
@@ -39,8 +39,7 @@ void GameState::bet(int player)
         return;
     }
 
-    int aiBet = aiChosenBet(player, handType, checkBet, pot);
-    cout << aiBet << endl;
+    int aiBet = aiChosenBet(player, handType, minBet, pot, chips);
     // bets[player] = aiBet;
     int newBet = aiBet - bets[player];
     // if (checkBet < 200) 
@@ -52,16 +51,12 @@ void GameState::bet(int player)
     // }
 
     // make sure only bet when an actual new bet
-   if(aiBet >= 0 && newBet >= 0)
+   if(aiBet > 0 && newBet > 0)
    {
 
     pot += newBet;
     chips[player] -= newBet;
     bets[player] += newBet;
-    turn = (turn + 1) % numPlayers;
-    hasBet[player] = true;
-   } else {
-    folds[player] = true;
     turn = (turn + 1) % numPlayers;
    }
 
@@ -69,6 +64,8 @@ void GameState::bet(int player)
     {
         checkBet = bets[player];
     }
+
+    hasBet[player] = true;
 
     minBet = checkBet - bets[0];
     if (minBet < 0) 
@@ -101,6 +98,7 @@ void GameState::gameBegin() {
     playerHasBet = false;
     gameStage = 0;
     playerBet = 0;
+    checkBet = 0;
     dealer = (dealer + 1) % numPlayers;
 
     resetBets();
@@ -112,8 +110,6 @@ void GameState::gameBegin() {
     if ((dealer + 1) % numPlayers == 0) {
         playerHasBet = true;
     }
-
-    checkBet = 200;
 
     chips[(dealer + 1) % numPlayers] -= smallBlind;
     chips[(dealer + 2) % numPlayers] -= bigBlind;
