@@ -242,7 +242,7 @@ int handRank(const string& handType)
         int bestRank = handRank(evaluateHand(playerHands[0]));
         vector<int> bestSorted = getSortedRanks(playerHands[0]);
     
-        for (int i = 1; i < playerHands.size(); ++i) 
+        for (size_t i = 1; i < playerHands.size(); ++i) 
         {
             int currentRank = handRank(evaluateHand(playerHands[i]));
     

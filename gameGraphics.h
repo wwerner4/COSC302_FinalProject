@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "cardDeck.h"
+#include "CardEvaluation/handEvaluator.h"
 
 class GameGraphics;
 

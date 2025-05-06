@@ -3,7 +3,7 @@
 #include <iostream>
 #include <unistd.h>
 
-#include "CardEvaluation/cardNames.h"
+#include "CardEvaluation/handEvaluator.h"
 #include "cardDeck.h"
 using namespace std;
 

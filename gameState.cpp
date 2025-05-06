@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "cardDeck.h"
-#include "cardEvaluation/handEvaluator.h"
+#include "CardEvaluation/handEvaluator.h"
 #include "gameGraphics.h"
 //#include "ai.h"
 using namespace std;
