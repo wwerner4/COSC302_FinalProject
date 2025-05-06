@@ -56,7 +56,7 @@ float calculatePotOdds(int player, int betToCall, int pot) {
     return static_cast<float>(pot) / (pot + betToCall);
 }
 
-bool aiShouldFold(int player, string handType, int betToCall, int pot, vector<int> chips) 
+bool aiShouldFold(int player, string handType, int betToCall, int pot, const vector<int>& chips)
 {
     float handStrength = evaluateHandStrength(handType);
     float potOdds = calculatePotOdds(player, betToCall, pot);
@@ -77,7 +77,7 @@ bool aiShouldFold(int player, string handType, int betToCall, int pot, vector<in
     }
 }
 
-int aiChosenBet(int player, string handType, int betToCall, int pot, vector<int> chips) 
+int aiChosenBet(int player, string handType, int betToCall, int pot, const vector<int>& chips) 
 {
     float handStrength = evaluateHandStrength(handType);
     float potOdds = calculatePotOdds(player, betToCall, pot);
