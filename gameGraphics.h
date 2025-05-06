@@ -42,6 +42,10 @@ class GameState {
     void newStage();
     int determineWinner();
 
+    bool aiShouldFold(int);
+    int aiChosenBet(int);
+    float calculatePotOdds(int); 
+
     int playerBet;
     bool playerHasBet;
     int minBet;
