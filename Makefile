@@ -1,10 +1,10 @@
 # Makefile for the CardDeck and its corresponding tests
 CXX=		g++
-CXXFLAGS=	-g -Wall -std=gnu++11
+CXXFLAGS=	-g -Wall -std=gnu++17
 LDFLAGS=	
 SHELL=		bash
 PROGRAMS=	playGame
-SOURCES=	playGame.cpp cardDeck.cpp gameGraphics.cpp gameState.cpp CardEvaluation/handEvaluator.cpp
+SOURCES=	playGame.cpp cardDeck.cpp gameGraphics.cpp gameState.cpp CardEvaluation/handEvaluator.cpp ai.cpp
 OBJECTS=	$(SOURCES:.cpp=.o)
 
 all:		$(PROGRAMS)
