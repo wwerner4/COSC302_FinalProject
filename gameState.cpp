@@ -76,7 +76,6 @@ void GameState::resetBets() {
 }
 
 void GameState::gameBegin() {
-    cout << "new hand" << endl;
     playingGame = true;
 
     playerHasBet = false;
@@ -90,6 +89,10 @@ void GameState::gameBegin() {
     bets[(dealer + 2) % numPlayers] = bigBlind;
     hasBet[(dealer + 1) % numPlayers] = true;
     hasBet[(dealer + 2) % numPlayers] = true;
+
+    if ((dealer + 1) % numPlayers == 0) {
+        playerHasBet = true;
+    }
 
     chips[(dealer + 1) % numPlayers] -= smallBlind;
     chips[(dealer + 2) % numPlayers] -= bigBlind;
@@ -105,13 +108,6 @@ void GameState::gameBegin() {
         minBet = bigBlind;
         playerBet = minBet;
     }
-
-    /*
-    for (int i = 0 ; i < numPlayers; i ++) {
-        cout << bets[i] << ", ";
-    }
-    cout << endl;
-    */
 
     pot = smallBlind + bigBlind;
 
@@ -175,7 +171,6 @@ void GameState::checkState() {
             turn = (turn + 1) % numPlayers;
         }
     } else {
-        cout << "ibet: " << turn << endl;
         bet(turn);
     }
 
@@ -183,20 +178,6 @@ void GameState::checkState() {
 }
 
 void GameState::newStage() {
-    /*
-    cout << "gameStage: " << gameStage << endl;
-    cout << "checkBet: " << checkBet << endl;
-    for (size_t i = 0; i < bets.size(); i++) {
-        cout << bets[i] << ", ";
-    }
-    cout << endl;
-
-    for (size_t i = 0; i < hasBet.size(); i++) {
-        cout << hasBet[i] << ", ";
-    }
-    cout << endl;
-    */
-
     sleep(1);
 
     if (gameStage == 1) {
@@ -227,7 +208,9 @@ void GameState::newStage() {
         int winner = determineWinner();
         chips[winner] += pot;
 
-        sleep(5);
+        game->endScreen();
+
+        sleep(10);
         gameBegin();
     }
 

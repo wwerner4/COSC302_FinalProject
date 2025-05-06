@@ -480,17 +480,10 @@ void GameGraphics::matchGameState() {
 
 // https://en.sfml-dev.org/forums/index.php?topic=22496.0
 void GameGraphics::endScreen() {
-    cout << "endScreen" << endl;
-
-    cout << textures.size() << endl;
-    cout << sprites.size() << endl;
-    cout << endl;
-
     int indexStart = textures.size() - ((state->numPlayers - 1)*2);
     for (int i = 1; i < state->numPlayers; i++) {
         if(!state->folds[i]) {
             for (int j = 0; j < 2; j++) {
-                cout << state->hands[i][j] << ", ";
                 sf::Texture *texture = textures[indexStart + (i-1)*2 + j];
 
                 string newTexture = getCardName(state->hands[i][j]);
@@ -499,7 +492,6 @@ void GameGraphics::endScreen() {
 
                 sprites[indexStart + (i-1)*2 + j]->setTexture(*texture);
             }
-            cout << endl;
         }
     }
 
