@@ -17,7 +17,10 @@ bool aiShouldFold(int player, string handType, int betToCall, int pot)
     {
         return false; // Call
     } else {
-        return true;  // Fold
+        if (betToCall > 0) {
+            return true;  // Fold
+        }
+        return false;
     }
 }
 float evaluateHandStrength(string handType)
@@ -44,22 +47,22 @@ float evaluateHandStrength(string handType)
 int aiChosenBet(int player, string handType, int betToCall, int pot) 
 {
     float handStrength = evaluateHandStrength(handType);
-    float potOdds = calculatePotOdds(player, betToCall, pot);
+    //float potOdds = calculatePotOdds(player, betToCall, pot);
     int currentBet = betToCall;  
 
     if (handStrength > 0.7f) 
     {
         // Raise by 20% of pot
-        int raiseAmount = static_cast<int>(pot * 0.20);
+        int raiseAmount = ((static_cast<int>(pot * 0.20) + 100) / 100) * 100;
         return currentBet + raiseAmount;
-    } else if (potOdds > 0.4) 
+    } else
     {
         // Just call
         return currentBet;
-    } else {
+    } //else {
         // doesnt bet here
-        return 0;
-    }
+       // return 0;
+    //}
 }
 float calculatePotOdds(int player, int betToCall, int pot) 
 {
