@@ -173,7 +173,7 @@ void GameGraphics::decBet() {
 
 void GameGraphics::userBet() {
     if (state->turn == 0) {
-        state->bets[0] = state->playerBet;
+        state->bets[0] += state->playerBet;
         state->pot += state->bets[0];
         state->chips[0] -= state->playerBet;
         state->playerHasBet = true;
