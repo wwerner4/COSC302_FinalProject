@@ -26,8 +26,8 @@ namespace std
     string evaluateHand(const vector<int>& hand) 
     {
         // confirm the hand size
-        if (hand.size() != 5) 
-            return "Invalid hand (needs 5 cards)";
+        // if (hand.size() != 5) 
+        //     return "Invalid hand]";
         
         // get and sort ranks (0-12 where 0=ace, 1=2, 2=3, ..., 12=king)
         vector<int> ranks;
@@ -106,7 +106,8 @@ namespace std
         isStraight = isStraight || isAceLowStraight || isAceHighStraight;
         
         // Evaluate hand ranking
-        if (isFlush && isStraight) {
+        if (isFlush && isStraight) 
+        {
             // Check for royal flush (10-J-Q-K-A of same suit)
             if (ranks[0] == 0 && ranks[1] == 9 && ranks[2] == 10 && 
                 ranks[3] == 11 && ranks[4] == 12) {
@@ -115,7 +116,8 @@ namespace std
             return "Straight Flush";
         }
         
-        if (hasFourOfAKind) {
+        if (hasFourOfAKind) 
+        {
             return "Four of a Kind";
         }
         
@@ -123,23 +125,28 @@ namespace std
             return "Full House";
         }
         
-        if (isFlush) {
+        if (isFlush) 
+        {
             return "Flush";
         }
         
-        if (isStraight) {
+        if (isStraight) 
+        {
             return "Straight";
         }
         
-        if (hasThreeOfAKind) {
+        if (hasThreeOfAKind) 
+        {
             return "Three of a Kind";
         }
         
-        if (pairCount == 2) {
+        if (pairCount == 2) 
+        {
             return "Two Pair";
         }
         
-        if (pairCount == 1) {
+        if (pairCount == 1) 
+        {
             return "One Pair";
         }
         
@@ -164,60 +171,71 @@ int handRank(const string& handType)
     return 0;
 }vector<int> getSortedRanks(const vector<int>& hand) 
 {
-    // Extract ranks from card values
+    // ranks and count their appearences/freq
     vector<int> ranks;
     unordered_map<int, int> rankFrequency;
     
     for (int card : hand) 
     {
-        int rank = card % 13; // 0=ace, 1=2, ..., 12=king
+         // where ace is 0, 1 is 2, 12 king, 13 will also be technically 13 since strongest
+        int rank = card % 13;
         ranks.push_back(rank);
         rankFrequency[rank]++;
     }
-    
-    // For high card comparison, we need ranks sorted by frequency (highest to lowest)
-    // and then by rank value (highest to lowest)
-    
-    // Create a vector of pairs (frequency, rank)
-    vector<pair<int, int>> ranksByFrequency;
-    for (const auto& [rank, frequency] : rankFrequency) 
+
+    // Step 2: Create a simple list of all ranks with their frequencies
+    vector<pair<int, int>> rankFreqPairs;
+    for (const auto& entry : rankFrequency) 
     {
-        ranksByFrequency.push_back({frequency, rank});
+        rankFreqPairs.push_back(entry);
     }
-    
-    // Sort the pairs by frequency (descending) and then by rank (descending)
-    sort(ranksByFrequency.begin(), ranksByFrequency.end(), 
-        [](const pair<int, int>& a, const pair<int, int>& b) 
+
+    // sorting by freq
+    for (size_t i = 0; i < rankFreqPairs.size(); i++) 
+    {
+        for (size_t j = i+1; j < rankFreqPairs.size(); j++) 
         {
-            if (a.first != b.first) {
-                return a.first > b.first; 
-            }
-            
-            int rankA = a.second;
-            int rankB = b.second;
-            
-            if (rankA == 0) 
+            // Compare frequencies
+            if (rankFreqPairs[j].second > rankFreqPairs[i].second) 
             {
-                rankA = 13; 
+                // Swap if frequency is higher
+                swap(rankFreqPairs[i], rankFreqPairs[j]);
             }
-            
-            if (rankB == 0) 
-            {
-                rankB = 13;  
-            }
-            
-            return rankA > rankB; 
-        });
-    
-    // get sorted ranks
-    vector<int> sortedRanks;
-    for (const auto& [frequency, rank] : ranksByFrequency) 
-    {
-        sortedRanks.push_back(rank);
+        }
     }
-    
+
+    //  in equal freq sort by rank desc
+    // 
+    for (size_t i = 0; i < rankFreqPairs.size(); i++) 
+    {
+        for (size_t j = i+1; j < rankFreqPairs.size(); j++) 
+        {
+            if (rankFreqPairs[j].second == rankFreqPairs[i].second) 
+            {
+                // make  Ace (0) as highest (13) since it is the strongest card
+                int rankA = rankFreqPairs[i].first;
+                int rankB = rankFreqPairs[j].first;
+                if (rankA == 0) rankA = 13;
+                if (rankB == 0) rankB = 13;
+
+                if (rankB > rankA) 
+                {
+                    swap(rankFreqPairs[i], rankFreqPairs[j]);
+                }
+            }
+        }
+    }
+
+    //  the ranks in order
+    vector<int> sortedRanks;
+    for (const auto& pair : rankFreqPairs) 
+    {
+        sortedRanks.push_back(pair.first);
+    }
+
     return sortedRanks;
 }
+// determine which hand is actually better than the other when same rank
     int handWinner(const std::vector<std::vector<int>>& playerHands) 
     {
         int bestIndex = 0;
