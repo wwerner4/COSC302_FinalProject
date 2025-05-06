@@ -236,45 +236,72 @@ void GameState::newStage() {
 
 int GameState::determineWinner() 
 {
-    vector<vector<int>> thePlayerHands;
-    vector<int> thePlayersInTheGame;
-    vector<string> hands; 
+    // all 7 cards
+    vector<vector<int>> thePlayerHands;  
+    // indexing players
+    vector<int> thePlayersInTheGame;    
+    // evaluated hands
+    vector<string> handTypes;           
 
-
+    // Collect active players and their full hands
     for(int i = 0; i < numPlayers; i++)
     {
-        // only adding the current players that havent folded
         if(!folds[i])
         {
+            // Combine hole cards with community cards
             vector<int> fullHand = hands[i];
             fullHand.insert(fullHand.end(), table.begin(), table.end());
-            activePlayerHands.push_back(fullHand);
-            activePlayers.push_back(i);
+            thePlayerHands.push_back(fullHand);
+            thePlayersInTheGame.push_back(i);
         }
     }
-    // we got all the hands in thePlayerHands now that are still in tehg ame
+
+    // If only one player remains, they win
+    if(thePlayerHands.size() == 1) 
+    {
+        return thePlayersInTheGame[0];
+    }
+
+    // check what is current at each hand
     for(size_t i = 0; i < thePlayerHands.size(); i++)
     {
-        hands.push_back(evaluateHand(thePlayerHands[i]));
+        handTypes.push_back(evaluateHand(thePlayerHands[i]));
     }
-    // -1 is me placeholder value
-    int bestRank = -1;
 
-    // find the best ranking hand
-    for(size_t i = 0; i < hands.size(); i++)
+    // Find best rank in all the hands
+    int bestRank = -1;
+    for(size_t i = 0; i < handTypes.size(); i++)
     {
-        int rank = handRank(hands[i]);
-        if(rank > bestRank)
+        int currentRank = handRank(handTypes[i]);
+        if(currentRank > bestRank) 
         {
-            bestRank = rank;
+            bestRank = currentRank;
         }
     }
 
-    // now get the highest value of the best ranking hand (since there could be multiple of same best hand type)
-    // vector<
-    // for(size_t j = 0; j < hands.size(); j++)
-    // {
+    // get index of best hands
+    vector<int> bestHandIndices;
+    for(size_t j = 0; j < handTypes.size(); j++)
+    {
+        if(handRank(handTypes[j]) == bestRank) 
+        {
+            bestHandIndices.push_back(j);
+        }
+    }
 
-    // }
-    // return 0;
+    // If best hand only one, return it cause they won
+    if(bestHandIndices.size() == 1) 
+    {
+        return thePlayersInTheGame[bestHandIndices[0]];
+    }
+
+    // now ties...
+    vector<vector<int>> tiedHands;
+    for(int index : bestHandIndices) 
+    {
+        tiedHands.push_back(thePlayerHands[index]);
+    }
+    
+    int winningHandIndex = handWinner(tiedHands);
+    return thePlayersInTheGame[bestHandIndices[winningHandIndex]];
 }
