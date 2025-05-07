@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-#include "cardDeck.h"
 #include "CardEvaluation/handEvaluator.h"
-#include "gameGraphics.h"
 #include "ai.h"
+#include "cardDeck.h"
+#include "gameGraphics.h"
 using namespace std;
 
 void checkSameHand();
@@ -21,12 +21,11 @@ GameState::GameState() {
     // AIGame *ai = new AIGame;
 
     chips.resize(numPlayers, 10000);
+    bustPlayers.resize(numPlayers, false);
 }
 
-void GameState::bet(int player) 
-{
-    if (player == 0) 
-    {
+void GameState::bet(int player) {
+    if (player == 0) {
         return;
     }
 
@@ -34,8 +33,7 @@ void GameState::bet(int player)
     handIncludingCommunityCards.insert(handIncludingCommunityCards.end(), table.begin(), table.end());
     string handType = evaluateHand(handIncludingCommunityCards);
 
-    if (aiShouldFold(player, handType, checkBet, pot, chips))
-    {
+    if (aiShouldFold(player, handType, checkBet, pot, chips)) {
         folds[player] = true;
         turn = (turn + 1) % numPlayers;
 
@@ -43,35 +41,33 @@ void GameState::bet(int player)
         return;
     }
 
+    cout << checkBet << endl;
     int aiBet = aiChosenBet(player, handType, checkBet, pot, chips);
     // bets[player] = aiBet;
     int newBet = aiBet - bets[player];
+    cout << newBet << " ";
 
-    if ((aiBet - bets[player]) >= chips[player]) {
-        newBet = chips[player] - bets[player];
+    if (newBet >= chips[player]) {
+        newBet = chips[player];
     }
 
     // make sure only bet when an actual new bet
-   if(aiBet >= 0 && newBet >= 0)
-   {
+    if (aiBet >= 0 && newBet >= 0) {
+        pot += newBet;
+        chips[player] -= newBet;
+        bets[player] += newBet;
+        turn = (turn + 1) % numPlayers;
+        hasBet[player] = true;
+    }
 
-    pot += newBet;
-    chips[player] -= newBet;
-    bets[player] += newBet;
-    turn = (turn + 1) % numPlayers;
-    hasBet[player] = true;
-   }
-
-    if (bets[player] > checkBet) 
-    {
+    if (bets[player] > checkBet) {
         checkBet = bets[player];
     }
 
     hasBet[player] = true;
 
     minBet = checkBet - bets[0];
-    if (minBet < 0) 
-    {
+    if (minBet < 0) {
         minBet = 0;
     }
 
@@ -85,8 +81,7 @@ void GameState::bet(int player)
     return;
 }
 
-void GameState::resetBets() 
-{
+void GameState::resetBets() {
     bets.clear();
     bets.resize(numPlayers, 0);
 
@@ -96,37 +91,76 @@ void GameState::resetBets()
     return;
 }
 
+void GameState::nextPlayer() {
+    turn = (turn + 1) % numPlayers;
+    return;
+}
 void GameState::gameBegin() {
+    folds.clear();
+    folds.resize(numPlayers, false);
+
+    int bustCount = 0;
+    for (size_t i = 0; i < chips.size(); i++) {
+        if (chips[i] == 0) {
+            bustPlayers[i] = true;
+            bustCount++;
+            folds[i] = true;
+        }
+    }
+
+    gameStage = 0;
+    if (bustCount == numPlayers - 1) {
+        game->matchGameState();
+        game->gameOver();
+
+        sleep(10);
+        game->closeWindow();
+    }
+
     playingGame = true;
 
     playerHasBet = false;
-    gameStage = 0;
     playerBet = 0;
-    dealer = (dealer + 1) % numPlayers;
-
     resetBets();
-    bets[(dealer + 1) % numPlayers] = smallBlind;
-    bets[(dealer + 2) % numPlayers] = bigBlind;
-    hasBet[(dealer + 1) % numPlayers] = true;
-    hasBet[(dealer + 2) % numPlayers] = true;
 
-    if ((dealer + 1) % numPlayers == 0) {
+    bool playerBetSet = false;
+
+    dealer = (dealer + 1) % numPlayers;
+    turn = dealer;
+    do {
+    nextPlayer();
+    } while (bustPlayers[turn]);
+
+    bets[turn] = smallBlind;
+    hasBet[turn] = true;
+    chips[turn] -= smallBlind;
+
+    if (turn == 0) {
+        minBet = bigBlind - smallBlind;
+        playerBet = minBet;
+        playerBetSet = true;
+    }
+
+    do {
+        nextPlayer();
+        } while (bustPlayers[turn]);
+    
+    bets[turn] = bigBlind;
+    hasBet[turn] = true;
+    chips[turn] -= bigBlind;
+
+    if (turn == 0) {
         playerHasBet = true;
+        minBet = 0;
+        playerBet = minBet;
+        playerBetSet = true;
     }
 
     checkBet = 200;
 
-    chips[(dealer + 1) % numPlayers] -= smallBlind;
-    chips[(dealer + 2) % numPlayers] -= bigBlind;
-    turn = (dealer + 3) % numPlayers;
+    nextPlayer();
 
-    if ((dealer + 1) % numPlayers == 0) {
-        minBet = bigBlind - smallBlind;
-        playerBet = minBet;
-    } else if ((dealer + 2) % numPlayers == 0) {
-        minBet = 0;
-        playerBet = minBet;
-    } else {
+    if (!playerBetSet) {
         minBet = bigBlind;
         playerBet = minBet;
     }
@@ -134,9 +168,6 @@ void GameState::gameBegin() {
     pot = smallBlind + bigBlind;
 
     table.clear();
-
-    folds.clear();
-    folds.resize(numPlayers, false);
 
     deck = new CardDeck(1);
     deck->shuffle();
@@ -168,7 +199,7 @@ void GameState::checkState() {
     vector<bool> moveOn;
 
     for (size_t i = 0; i < bets.size(); i++) {
-        if ((bets[i] == checkBet && hasBet[i]) || folds[i]) {
+        if ((bets[i] == checkBet && hasBet[i]) || folds[i] || chips[i] == 0) {
             moveOn.push_back(true);
         }
     }
@@ -181,7 +212,6 @@ void GameState::checkState() {
 
     if (turn == 0) {
         if (playerHasBet || folds[0]) {
-
             if (!folds[0]) {
                 hasBet[0] = true;
             }
@@ -239,20 +269,17 @@ void GameState::newStage() {
     return;
 }
 
-int GameState::determineWinner() 
-{
+int GameState::determineWinner() {
     // all 7 cards
-    vector<vector<int>> thePlayerHands;  
+    vector<vector<int>> thePlayerHands;
     // indexing players
-    vector<int> thePlayersInTheGame;    
+    vector<int> thePlayersInTheGame;
     // evaluated hands
-    vector<string> handTypes;           
+    vector<string> handTypes;
 
     // Collect active players and their full hands
-    for(int i = 0; i < numPlayers; i++)
-    {
-        if(!folds[i])
-        {
+    for (int i = 0; i < numPlayers; i++) {
+        if (!folds[i]) {
             // Combine hole cards with community cards
             vector<int> fullHand = hands[i];
             fullHand.insert(fullHand.end(), table.begin(), table.end());
@@ -262,134 +289,115 @@ int GameState::determineWinner()
     }
 
     // If only one player remains, they win
-    if(thePlayerHands.size() == 1) 
-    {
+    if (thePlayerHands.size() == 1) {
         return thePlayersInTheGame[0];
     }
 
     // check what is current at each hand
-    for(size_t i = 0; i < thePlayerHands.size(); i++)
-    {
+    for (size_t i = 0; i < thePlayerHands.size(); i++) {
         handTypes.push_back(evaluateHand(thePlayerHands[i]));
         cout << handTypes.back() << endl;
     }
 
     // Find best rank in all the hands
     int bestRank = -1;
-    for(size_t i = 0; i < handTypes.size(); i++)
-    {
+    for (size_t i = 0; i < handTypes.size(); i++) {
         int currentRank = handRank(handTypes[i]);
-        if(currentRank > bestRank) 
-        {
+        if (currentRank > bestRank) {
             bestRank = currentRank;
         }
     }
 
     // get index of best hands
     vector<int> bestHandIndices;
-    for(size_t j = 0; j < handTypes.size(); j++)
-    {
-        if(handRank(handTypes[j]) == bestRank) 
-        {
+    for (size_t j = 0; j < handTypes.size(); j++) {
+        if (handRank(handTypes[j]) == bestRank) {
             bestHandIndices.push_back(j);
         }
     }
 
     // If best hand only one, return it cause they won
-    if(bestHandIndices.size() == 1) 
-    {
+    if (bestHandIndices.size() == 1) {
         return thePlayersInTheGame[bestHandIndices[0]];
     }
 
     // now ties...
     vector<vector<int>> tiedHands;
-    for(int index : bestHandIndices) 
-    {
+    for (int index : bestHandIndices) {
         tiedHands.push_back(thePlayerHands[index]);
     }
-    
+
     int winningHandIndex = handWinner(tiedHands);
     return thePlayersInTheGame[bestHandIndices[winningHandIndex]];
 }
 
 void checkSameHand() {
-
     vector<vector<int>> hands;
-    hands.push_back({0,12});
-    hands.push_back({7,8});
+    hands.push_back({0, 12});
+    hands.push_back({7, 8});
 
-    vector<int> table = {13,9,10,11,1+13};
+    vector<int> table = {13, 9, 10, 11, 1 + 13};
 
     // all 7 cards
-    vector<vector<int>> thePlayerHands;  
+    vector<vector<int>> thePlayerHands;
     // indexing players
-    vector<int> thePlayersInTheGame;    
+    vector<int> thePlayersInTheGame;
     // evaluated hands
-    vector<string> handTypes;           
+    vector<string> handTypes;
 
     // Collect active players and their full hands
-    for(int i = 0; i < 2; i++)
-    {
-    //    if(!folds[i])
-    //    {
-            // Combine hole cards with community cards
-            vector<int> fullHand = hands[i];
-            fullHand.insert(fullHand.end(), table.begin(), table.end());
-            thePlayerHands.push_back(fullHand);
-            thePlayersInTheGame.push_back(i);
-    //    }
+    for (int i = 0; i < 2; i++) {
+        //    if(!folds[i])
+        //    {
+        // Combine hole cards with community cards
+        vector<int> fullHand = hands[i];
+        fullHand.insert(fullHand.end(), table.begin(), table.end());
+        thePlayerHands.push_back(fullHand);
+        thePlayersInTheGame.push_back(i);
+        //    }
     }
 
     // If only one player remains, they win
-    if(thePlayerHands.size() == 1) 
-    {
+    if (thePlayerHands.size() == 1) {
         cout << "winner: " << thePlayersInTheGame[0] << endl;
         return;
     }
 
     // check what is current at each hand
-    for(size_t i = 0; i < thePlayerHands.size(); i++)
-    {
+    for (size_t i = 0; i < thePlayerHands.size(); i++) {
         handTypes.push_back(evaluateHand(thePlayerHands[i]));
         cout << handTypes[i] << endl;
     }
 
     // Find best rank in all the hands
     int bestRank = -1;
-    for(size_t i = 0; i < handTypes.size(); i++)
-    {
+    for (size_t i = 0; i < handTypes.size(); i++) {
         int currentRank = handRank(handTypes[i]);
-        if(currentRank > bestRank) 
-        {
+        if (currentRank > bestRank) {
             bestRank = currentRank;
         }
     }
 
     // get index of best hands
     vector<int> bestHandIndices;
-    for(size_t j = 0; j < handTypes.size(); j++)
-    {
-        if(handRank(handTypes[j]) == bestRank) 
-        {
+    for (size_t j = 0; j < handTypes.size(); j++) {
+        if (handRank(handTypes[j]) == bestRank) {
             bestHandIndices.push_back(j);
         }
     }
 
     // If best hand only one, return it cause they won
-    if(bestHandIndices.size() == 1) 
-    {
+    if (bestHandIndices.size() == 1) {
         cout << "winner: " << thePlayersInTheGame[bestHandIndices[0]] << endl;
         return;
     }
 
     // now ties...
     vector<vector<int>> tiedHands;
-    for(int index : bestHandIndices) 
-    {
+    for (int index : bestHandIndices) {
         tiedHands.push_back(thePlayerHands[index]);
     }
-    
+
     int winningHandIndex = handWinner(tiedHands);
     cout << "winner: " << thePlayersInTheGame[bestHandIndices[winningHandIndex]] << endl;
-
 }

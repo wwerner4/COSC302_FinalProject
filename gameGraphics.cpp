@@ -1,7 +1,8 @@
 #include "gameGraphics.h"
 
-#include <iostream>
 #include <unistd.h>
+
+#include <iostream>
 
 #include "CardEvaluation/handEvaluator.h"
 #include "cardDeck.h"
@@ -72,6 +73,7 @@ void GameGraphics::clearWindow() {
 
 // close the game window
 void GameGraphics::closeWindow() {
+    clearWindow();
     window.close();
     return;
 }
@@ -179,7 +181,7 @@ void GameGraphics::decBet() {
 void GameGraphics::userBet() {
     if (state->turn == 0) {
         state->bets[0] += state->playerBet;
-        state->pot += state->bets[0];
+        state->pot += state->playerBet;
         state->chips[0] -= state->playerBet;
         state->playerHasBet = true;
 
@@ -397,6 +399,18 @@ void GameGraphics::matchGameState() {
     totalChipsText->setOrigin(0, totalChipsText->getLocalBounds().height);
     totalChipsText->setPosition(25, (currentWindowSize.y - 100) - 50 - 40);
 
+    sf::Text *playerTurnBetText = new sf::Text;
+    texts.push_back(playerTurnBetText);
+    drawnElements[2].push_back(playerTurnBetText);
+
+    playerTurnBetText->setFont(font);
+    playerTurnBetText->setString("YOUR BET THIS TURN: " + to_string(state->bets[0]));
+    playerTurnBetText->setCharacterSize(50);
+    playerTurnBetText->setFillColor(sf::Color::White);
+
+    playerTurnBetText->setOrigin(0, playerTurnBetText->getLocalBounds().height);
+    playerTurnBetText->setPosition(totalChipsText->getPosition().x, totalChipsText->getPosition().y - 50);
+
     sf::Text *potText = new sf::Text;
     texts.push_back(potText);
     drawnElements[2].push_back(potText);
@@ -492,36 +506,54 @@ void GameGraphics::matchGameState() {
 
 // https://en.sfml-dev.org/forums/index.php?topic=22496.0
 void GameGraphics::endScreen() {
-    int indexStart = textures.size() - ((state->numPlayers - 1)*2);
+    int indexStart = textures.size() - ((state->numPlayers - 1) * 2);
     for (int i = 1; i < state->numPlayers; i++) {
-        if(!state->folds[i]) {
+        if (!state->folds[i]) {
             for (int j = 0; j < 2; j++) {
-                sf::Texture *texture = textures[indexStart + (i-1)*2 + j];
+                sf::Texture *texture = textures[indexStart + (i - 1) * 2 + j];
 
                 string newTexture = getCardName(state->hands[i][j]);
                 texture = new sf::Texture;
                 texture->loadFromFile(newTexture);
 
-                sprites[indexStart + (i-1)*2 + j]->setTexture(*texture);
+                sprites[indexStart + (i - 1) * 2 + j]->setTexture(*texture);
             }
         }
     }
 
     sf::Text *win = new sf::Text;
-            texts.push_back(win);
-            drawnElements[2].push_back(win);
+    texts.push_back(win);
+    drawnElements[2].push_back(win);
 
-            win->setFont(font);
-            if (state->determineWinner() == 0) {
-                win->setString("You won this hand");
-            } else {
-                win->setString("CPU" + to_string(state->determineWinner()) + " won this hand");
-            }
-            win->setCharacterSize(100);
-            win->setFillColor(sf::Color::White);
+    win->setFont(font);
+    if (state->determineWinner() == 0) {
+        win->setString("You won this hand");
+    } else {
+        win->setString("CPU" + to_string(state->determineWinner()) + " won this hand");
+    }
+    win->setCharacterSize(100);
+    win->setFillColor(sf::Color::White);
 
-            win->setOrigin(win->getLocalBounds().width / 2, win->getLocalBounds().height / 2);
-            win->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 2 - 165);
+    win->setOrigin(win->getLocalBounds().width / 2, win->getLocalBounds().height / 2);
+    win->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 2 - 165);
+
+    loopDraw();
+
+    return;
+}
+
+void GameGraphics::gameOver() {
+    sf::Text *gameOver = new sf::Text;
+    texts.push_back(gameOver);
+    drawnElements[2].push_back(gameOver);
+
+    gameOver->setFont(font);
+    gameOver->setString("Game Over: Too Many Players Out Of Chips");
+    gameOver->setCharacterSize(50);
+    gameOver->setFillColor(sf::Color::White);
+
+    gameOver->setOrigin(gameOver->getLocalBounds().width / 2, gameOver->getLocalBounds().height / 2);
+    gameOver->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 2 - 165);
 
     loopDraw();
 

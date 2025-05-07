@@ -34,8 +34,11 @@ class GameState {
     std::vector<std::vector<int>> hands;
     std::vector<int> table;
 
+    std::vector<bool> bustPlayers;
+
     void bet(int);
     void resetBets();
+    void nextPlayer();
 
     void gameBegin();
     void checkState();
@@ -58,6 +61,7 @@ class GameGraphics {
     void playScreen();
     void testScreen();
     void endScreen();
+    void gameOver();
 
     void matchGameState();
 
