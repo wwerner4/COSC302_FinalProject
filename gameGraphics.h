@@ -84,6 +84,7 @@ class GameGraphics {
     std::vector<sf::Shape *> shapes;
     std::vector<sf::Sprite *> sprites;
     std::vector<sf::Texture *> textures;
+    std::vector<sf::VertexArray *> vertexArrays;
     std::map<sf::Shape *, char> interactables;
     std::vector<std::vector<sf::Drawable *>> drawnElements;  // 2D to allow element grouping (i.e., player's hand might be elements[2][0 through 5]). The order of elements in drawnElements is the order they are drawn in, which is important
 };

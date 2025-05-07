@@ -47,6 +47,10 @@ void GameState::bet(int player)
     // bets[player] = aiBet;
     int newBet = aiBet - bets[player];
 
+    if ((aiBet - bets[player]) >= chips[player]) {
+        newBet = chips[player] - bets[player];
+    }
+
     // make sure only bet when an actual new bet
    if(aiBet >= 0 && newBet >= 0)
    {
@@ -56,9 +60,6 @@ void GameState::bet(int player)
     bets[player] += newBet;
     turn = (turn + 1) % numPlayers;
     hasBet[player] = true;
-   } else {
-    folds[player] = true;
-    turn = (turn + 1) % numPlayers;
    }
 
     if (bets[player] > checkBet) 
@@ -76,6 +77,8 @@ void GameState::bet(int player)
 
     playerBet = minBet;
     playerHasBet = false;
+
+    cout << newBet << " " << bets[player] << endl;
 
     sleep(1);
 

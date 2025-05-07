@@ -52,6 +52,11 @@ void GameGraphics::clearWindow() {
     }
     textures.clear();
 
+    for (size_t i = 0; i < vertexArrays.size(); i++) {
+        delete vertexArrays[i];
+    }
+    vertexArrays.clear();
+
     // at this point, all drawable objects are already deleted. we just need to reset interactibles and drawnElements
     interactables.clear();
 
@@ -254,7 +259,12 @@ void GameGraphics::matchGameState() {
         drawnElements[2].push_back(betIndicatorText);
 
         betIndicatorText->setFont(font);
-        betIndicatorText->setString(to_string(state->playerBet));
+
+        if (state->playerBet < state->chips[0]) {
+            betIndicatorText->setString(to_string(state->playerBet));
+        } else {
+            betIndicatorText->setString(to_string(state->chips[0]));
+        }
         betIndicatorText->setCharacterSize(50);
         betIndicatorText->setFillColor(sf::Color::White);
 
@@ -273,6 +283,7 @@ void GameGraphics::matchGameState() {
         betDecrement->setPosition(25 + betIndicator->getPosition().x + betIndicator->getSize().x, betIndicator->getPosition().y + betIndicator->getSize().y / 2);
 
         sf::VertexArray *decrementTriangle = new sf::VertexArray(sf::Triangles, 3);
+        vertexArrays.push_back(decrementTriangle);
 
         decrementTriangle[0][0].position = sf::Vector2f(betDecrement->getPosition().x + 5, betDecrement->getPosition().y - betDecrement->getSize().y + 5);
         decrementTriangle[0][0].color = sf::Color::White;
@@ -295,6 +306,7 @@ void GameGraphics::matchGameState() {
         betIncrement->setPosition(betDecrement->getPosition().x, betDecrement->getPosition().y - betDecrement->getSize().y - 10);
 
         sf::VertexArray *incrementTriangle = new sf::VertexArray(sf::Triangles, 3);
+        vertexArrays.push_back(incrementTriangle);
 
         incrementTriangle[0][0].position = sf::Vector2f(betIncrement->getPosition().x + 5, betIncrement->getPosition().y - 5);
         incrementTriangle[0][0].color = sf::Color::White;
