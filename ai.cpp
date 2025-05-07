@@ -80,21 +80,17 @@ bool aiShouldFold(int player, string handType, int betToCall, int pot, const vec
 int aiChosenBet(int player, string handType, int betToCall, int pot, const vector<int>& chips) 
 {
     float handStrength = evaluateHandStrength(handType);
-    float potOdds = calculatePotOdds(player, betToCall, pot);
     int currentBet = betToCall;
     
     float gini = calculateGini(chips);
     if (handStrength > 0.5f - gini * 0.01) 
     {
         // Raise by 20% of pot
-        int raiseAmount = static_cast<int>(pot * 0.20);
+        int raiseAmount = ((static_cast<int>(pot * 0.20) + 100) / 100) * 100;
         return currentBet + raiseAmount;
-    } else if (potOdds > 0.4 - gini* .01) 
+    } else
     {
         // Just call
         return currentBet;
-    } else {
-        // doesn't bet here
-        return 0;
     }
 }

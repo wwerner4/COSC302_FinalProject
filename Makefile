@@ -1,6 +1,6 @@
 # Makefile for the CardDeck and its corresponding tests
 CXX=		g++
-CXXFLAGS=	-g -Wall -std=gnu++17
+CXXFLAGS=	-g -Wall -std=gnu++11
 LDFLAGS=	
 SHELL=		bash
 PROGRAMS=	playGame
