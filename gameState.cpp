@@ -334,9 +334,9 @@ int GameState::determineWinner() {
 void checkSameHand() {
     vector<vector<int>> hands;
     hands.push_back({13, 7+13});
-    hands.push_back({0, 7+13});
+    hands.push_back({0+13, 12});
 
-    vector<int> table = {8+13, 9, 10, 11, 1 + 13};
+    vector<int> table = {8, 9, 10, 11, 1 + 13};
 
     // all 7 cards
     vector<vector<int>> thePlayerHands;

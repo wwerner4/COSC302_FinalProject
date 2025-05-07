@@ -1,6 +1,7 @@
 #include "handEvaluator.h"
 
 #include <algorithm>
+#include <iostream>
 #include <unordered_map>
 
 namespace std {
@@ -87,7 +88,22 @@ string evaluateHand(const vector<int>& hand) {
         isStraight = true;
     }
 
+    // Special case for Ace-low straight (A-2-3-4-5)
+    // Ace is 0, 2 is 1, 3 is 2, 4 is 3, 5 is 4
+    bool isAceLowStraight = (ranks[0] == 0 && ranks[1] == 1 &&
+                             ranks[2] == 2 && ranks[3] == 3 &&
+                             ranks[4] == 4);
+
+    // Special case for Ace-high straight (10-J-Q-K-A)
+    // 10 is 9, J is 10, Q is 11, K is 12, A is 0
+    bool isAceHighStraight = (ranks[0] == 0 && ranks[ranks.size() - 4] == 9 &&
+                              ranks[ranks.size() - 3] == 10 && ranks[ranks.size() - 2] == 11 &&
+                              ranks[ranks.size() - 1] == 12);
+
+    isStraight = isStraight || isAceLowStraight || isAceHighStraight;
+
     bool isStraightFlush = false;
+    bool isRoyalFlush = false;
     // need to know if the same 5 cards make up a straight and a flush, otherwise we have only a straight
     if (isStraight && isFlush) {
         vector<int> hearts;
@@ -115,45 +131,60 @@ string evaluateHand(const vector<int>& hand) {
         sortedHand.push_back(clubs);
         sortedHand.push_back(spades);
 
+        for (size_t i = 0; i < sortedHand.size(); i++) {
+            sort(sortedHand[i].begin(), sortedHand[i].end());
+
+            for (size_t j = 0; j < sortedHand[i].size(); j++) {
+                cout << sortedHand[i][j] << ", ";
+            }
+            cout << endl;
+        }
+
+        bool isAceLowStraightFlush = false;
+
         for (int i = 0; i < 4; i++) {
             if (sortedHand[i].size() >= 5) {
-
                 vector<int> straightFlushCards;
                 straightFlushCards.push_back(sortedHand[i][0]);
-                for (size_t j = 1; j < sortedHand[i].size(); i++) {
+
+                for (size_t j = 1; j < sortedHand[i].size(); j++) {
+                    cout << sortedHand[i][j] << endl;
                     if (sortedHand[i][j] != sortedHand[i][j - 1] + 1) {
                         straightFlushCards.clear();
                     }
                     straightFlushCards.push_back(sortedHand[i][j]);
                 }
 
+                for (size_t j = 0; j < straightFlushCards.size(); j++) {
+                    cout << straightFlushCards[j] << ", ";
+                }
+                cout << endl;
                 if (straightFlushCards.size() >= 5) {
                     isStraightFlush = true;
                 }
+
+                if (sortedHand[i][0] == 0 && sortedHand[i][1] == 1 &&
+                    sortedHand[i][2] == 2 && sortedHand[i][3] == 3 &&
+                    sortedHand[i][4] == 4) {
+                    isAceLowStraightFlush = true;
+                }
+
+                if (sortedHand[i][0] == 0 && sortedHand[i][sortedHand[i].size() - 4] == 9 &&
+                    sortedHand[i][sortedHand[i].size() - 3] == 10 && sortedHand[i][sortedHand[i].size() - 2] == 11 &&
+                    sortedHand[i][sortedHand[i].size() - 1] == 12) {
+                    isRoyalFlush = true;
+                }
             }
         }
+
+        isStraightFlush = isStraightFlush || isAceLowStraightFlush;
     }
 
-    // Special case for Ace-low straight (A-2-3-4-5)
-    // Ace is 0, 2 is 1, 3 is 2, 4 is 3, 5 is 4
-    bool isAceLowStraight = (ranks[0] == 0 && ranks[1] == 1 &&
-                             ranks[2] == 2 && ranks[3] == 3 &&
-                             ranks[4] == 4);
-
-    // Special case for Ace-high straight (10-J-Q-K-A)
-    // 10 is 9, J is 10, Q is 11, K is 12, A is 0
-    bool isAceHighStraight = (ranks[0] == 0 && ranks[ranks.size() - 4] == 9 &&
-                              ranks[ranks.size() - 3] == 10 && ranks[ranks.size() - 2] == 11 &&
-                              ranks[ranks.size() - 1] == 12);
-
-    isStraight = isStraight || isAceLowStraight || isAceHighStraight;
-
     // Evaluate hand ranking
+    if (isRoyalFlush) {
+        return "Royal Flush";
+    }
     if (isStraightFlush) {
-        // Check for royal flush (10-J-Q-K-A of same suit)
-        if (isAceHighStraight) {
-            return "Royal Flush";
-        }
         return "Straight Flush";
     }
 
