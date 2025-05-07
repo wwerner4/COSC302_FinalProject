@@ -74,26 +74,28 @@ string evaluateHand(const vector<int>& hand) {
     // Check for straight (sequential ranks)
     // we have to check all combinations (7,5) (cant just check adjacents because we could have a pair in the middle of the sorted ranks vector)
     bool isStraight = false;
-    for (size_t i = 0; i < ranks.size() - 1; i++) {
-        for (size_t j = i + 1; j < ranks.size(); j++) {
-            vector<int> tempRanks;
-            for (size_t k = 0; k < ranks.size(); k++) {
-                if (k != i && k != j) {
-                    tempRanks.push_back(ranks[k]);
+    if (ranks.size() >= 5) {
+        for (size_t i = 0; i < ranks.size() - 1; i++) {
+            for (size_t j = i + 1; j < ranks.size(); j++) {
+                vector<int> tempRanks;
+                for (size_t k = 0; k < ranks.size(); k++) {
+                    if (k != i && k != j) {
+                        tempRanks.push_back(ranks[k]);
+                    }
                 }
-            }
 
-            bool tmpIsStraight = true;
-            for (size_t k = 0; k < tempRanks.size(); k++) {
-                if (tempRanks[k] != tempRanks[k - 1] + 1) {
-                    tmpIsStraight = false;
+                bool tmpIsStraight = true;
+                for (size_t k = 0; k < tempRanks.size(); k++) {
+                    if (tempRanks[k] != tempRanks[k - 1] + 1) {
+                        tmpIsStraight = false;
+                        break;
+                    }
+                }
+
+                if (tmpIsStraight) {
+                    isStraight = true;
                     break;
                 }
-            }
-
-            if (tmpIsStraight) {
-                isStraight = true;
-                break;
             }
         }
     }

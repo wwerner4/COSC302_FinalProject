@@ -525,17 +525,25 @@ void GameGraphics::endScreen() {
     texts.push_back(win);
     drawnElements[2].push_back(win);
 
-    win->setFont(font);
-    if (state->determineWinner() == 0) {
-        win->setString("You won this hand");
+    int winner = state->determineWinner();
+
+    string winText;
+    if (winner == 0) {
+        winText = "You won this hand";
     } else {
-        win->setString("CPU" + to_string(state->determineWinner()) + " won this hand");
+        winText = "CPU" + to_string(winner) + " won this hand";
     }
-    win->setCharacterSize(100);
+    vector<int> winnerHand = state->hands[winner];
+    winnerHand.insert(winnerHand.end(), state->table.begin(), state->table.end());
+    winText += " with a " + evaluateHand(winnerHand);
+
+    win->setString(winText);
+    win->setFont(font);
+    win->setCharacterSize(50);
     win->setFillColor(sf::Color::White);
 
     win->setOrigin(win->getLocalBounds().width / 2, win->getLocalBounds().height / 2);
-    win->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 2 - 165);
+    win->setPosition(currentWindowSize.x / 2, currentWindowSize.y / 2 - 125);
 
     loopDraw();
 

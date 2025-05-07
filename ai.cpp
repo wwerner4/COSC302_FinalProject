@@ -27,7 +27,6 @@ float calculateGini(const vector<int>& chips) {
     }
     
     // gini formula
-    cout << (2.0f * sum) / (n * total) - (n + 1.0f) / n << endl;
     return (2.0f * sum) / (n * total) - (n + 1.0f) / n;
 }
 
