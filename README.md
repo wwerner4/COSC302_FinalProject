@@ -12,6 +12,6 @@ https://www.dafont.com/minecraft.font
 
 TODO:
 
-implement split pots
+implement split pots (maybe don't split, instead implement a hierarchy of suits so that one hand always has a higher card than the other)
 
 check turn order at each stage

@@ -333,10 +333,10 @@ int GameState::determineWinner() {
 
 void checkSameHand() {
     vector<vector<int>> hands;
-    hands.push_back({0, 12});
-    hands.push_back({7, 8});
+    hands.push_back({13, 7+13});
+    hands.push_back({0, 7+13});
 
-    vector<int> table = {13, 9, 10, 11, 1 + 13};
+    vector<int> table = {8+13, 9, 10, 11, 1 + 13};
 
     // all 7 cards
     vector<vector<int>> thePlayerHands;
@@ -397,6 +397,12 @@ void checkSameHand() {
     for (int index : bestHandIndices) {
         tiedHands.push_back(thePlayerHands[index]);
     }
+
+    /*
+    for (size_t i = 0; i < thePlayerHands[index].size(); i++) {
+        if ()
+    }
+        */
 
     int winningHandIndex = handWinner(tiedHands);
     cout << "winner: " << thePlayersInTheGame[bestHandIndices[winningHandIndex]] << endl;

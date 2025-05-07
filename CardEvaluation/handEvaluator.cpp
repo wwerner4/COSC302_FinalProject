@@ -74,27 +74,61 @@ string evaluateHand(const vector<int>& hand) {
     // Check for straight (sequential ranks)
     // we have to check all combinations (7,5) (cant just check adjacents because we could have a pair in the middle of the sorted ranks vector)
     bool isStraight = false;
-    if (ranks.size() >= 5) {
-        for (size_t i = 0; i < ranks.size() - 1; i++) {
-            for (size_t j = i + 1; j < ranks.size(); j++) {
-                vector<int> tempRanks;
-                for (size_t k = 0; k < ranks.size(); k++) {
-                    if (k != i && k != j) {
-                        tempRanks.push_back(ranks[k]);
+    vector<int> straightCards;
+    straightCards.push_back(ranks[0]);
+    for (size_t i = 1; i < ranks.size(); i++) {
+        if (ranks[i] != ranks[i - 1] + 1) {
+            straightCards.clear();
+        }
+        straightCards.push_back(ranks[i]);
+    }
+
+    if (straightCards.size() >= 5) {
+        isStraight = true;
+    }
+
+    bool isStraightFlush = false;
+    // need to know if the same 5 cards make up a straight and a flush, otherwise we have only a straight
+    if (isStraight && isFlush) {
+        vector<int> hearts;
+        vector<int> diamonds;
+        vector<int> clubs;
+        vector<int> spades;
+
+        for (size_t i = 0; i < hand.size(); i++) {
+            int card = hand[i];
+            int suit = card / 13;
+            int rank = card % 13;
+            if (suit == 0) {
+                hearts.push_back(rank);
+            } else if (suit == 1) {
+                diamonds.push_back(rank);
+            } else if (suit == 2) {
+                clubs.push_back(rank);
+            } else {
+                spades.push_back(rank);
+            }
+        }
+        vector<vector<int>> sortedHand;
+        sortedHand.push_back(hearts);
+        sortedHand.push_back(diamonds);
+        sortedHand.push_back(clubs);
+        sortedHand.push_back(spades);
+
+        for (int i = 0; i < 4; i++) {
+            if (sortedHand[i].size() >= 5) {
+
+                vector<int> straightFlushCards;
+                straightFlushCards.push_back(sortedHand[i][0]);
+                for (size_t j = 1; j < sortedHand[i].size(); i++) {
+                    if (sortedHand[i][j] != sortedHand[i][j - 1] + 1) {
+                        straightFlushCards.clear();
                     }
+                    straightFlushCards.push_back(sortedHand[i][j]);
                 }
 
-                bool tmpIsStraight = true;
-                for (size_t k = 0; k < tempRanks.size(); k++) {
-                    if (tempRanks[k] != tempRanks[k - 1] + 1) {
-                        tmpIsStraight = false;
-                        break;
-                    }
-                }
-
-                if (tmpIsStraight) {
-                    isStraight = true;
-                    break;
+                if (straightFlushCards.size() >= 5) {
+                    isStraightFlush = true;
                 }
             }
         }
@@ -115,7 +149,7 @@ string evaluateHand(const vector<int>& hand) {
     isStraight = isStraight || isAceLowStraight || isAceHighStraight;
 
     // Evaluate hand ranking
-    if (isFlush && isStraight) {
+    if (isStraightFlush) {
         // Check for royal flush (10-J-Q-K-A of same suit)
         if (isAceHighStraight) {
             return "Royal Flush";
