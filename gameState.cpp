@@ -45,7 +45,7 @@ void GameState::bet(int player) {
         return;
     }
 
-    int aiBet = aiChosenBet(player, handType, checkBet, pot, chips);
+    int aiBet = aiChosenBet(player, handType, checkBet, stageStartPot, chips);
     int newBet = aiBet - bets[player];
 
     // if the ai wants to bet more than the cpu has, go all in
@@ -86,6 +86,8 @@ void GameState::resetBets() {
 
     hasBet.clear();
     hasBet.resize(numPlayers, false);
+
+    stageStartPot = pot;
 
     return;
 }
@@ -182,6 +184,7 @@ void GameState::gameBegin() {
     }
 
     pot = smallBlind + bigBlind;
+    stageStartPot = pot;
 
     table.clear();
 

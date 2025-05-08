@@ -17,6 +17,7 @@ class GameState {
     bool playingGame;           // true if the player has clicked "Play Game" in the start menu. If true, we start the game loop
 
     int gameStage;              // at what point in the hand is the game? (these stages of the game are called "turns", or at least that is how we will refer to them in this documentation)
+    int stageStartPot;
     int pot;                    // current total bet this hand
     int smallBlind;             // smaller of 2 required bets at the start of play ("antes")
     int bigBlind;               // larger ante
