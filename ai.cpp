@@ -62,14 +62,14 @@ bool aiShouldFold(int player, string handType, int betToCall, int pot, const vec
     float potOdds = calculatePotOdds(player, betToCall, pot);
     
     float gini = calculateGini(chips);
-    float handThreshold = 0.5f - (gini * 0.01);
-    float potThreshold = 0.3f - (gini * 0.01);
+    float handThreshold = 0.7f - (gini * 0.01);
+    float potThreshold = 0.6f - (gini * 0.01);
     
     // Decision tree:
     if (handStrength > handThreshold) 
     {
         return false; // Raise
-    } else if (potOdds > potThreshold) 
+    } else if (potOdds > potThreshold || (handStrength + 0.3 > handThreshold && potOdds + 0.2 > potThreshold)) 
     {
         return false; // Call
     } else {
@@ -86,8 +86,12 @@ int aiChosenBet(int player, string handType, int betToCall, int pot, const vecto
     if (handStrength > 0.5f - gini * 0.01) 
     {
         // Raise by 20% of pot
-        int raiseAmount = ((static_cast<int>(pot * 0.20) + 100) / 100) * 100;
-        return currentBet + raiseAmount;
+        int raiseAmount = (static_cast<int>(pot * (0.20 + handStrength / 4) + 100) / 100) * 100;
+
+        if (raiseAmount > currentBet) {
+            return raiseAmount;
+        }
+        return currentBet;
     } else
     {
         // Just call
