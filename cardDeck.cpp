@@ -4,6 +4,7 @@
 #include <iostream>
 using namespace std;
 
+// init the deck
 CardDeck::CardDeck(int numDecks) {
     deckSize = numDecks*52;
     deck.resize(deckSize, -1);
@@ -16,25 +17,29 @@ CardDeck::CardDeck(int numDecks) {
     }
 }
 
+// randomize the positions of cards in the deck
 void CardDeck::shuffle() {
     vector<int> shuffledDeck;
-    srand(time(0));
+    srand(time(0));             // init rand
 
     while (deck.size() > 0) {
-        int randElement = rand()%deck.size();
-        shuffledDeck.push_back(deck[randElement]);
+        int randElement = rand() % deck.size();           // select random card
+        shuffledDeck.push_back(deck[randElement]);        // place random card in shuffled deck
 
+        // get iterator to the selected random card in the pre-shuffle deck
         vector<int>::iterator pos = deck.begin();
         for (int i = 0; i < randElement; i++) {
             pos++;
         }
-        deck.erase(pos);
+        deck.erase(pos);                // erase this value from the pre-shuffle deck
     }
 
+    // replace pre-shuffle deck with shuffled deck
     deck = shuffledDeck;
     return;
 }
 
+// remove the top card from the deck
 void CardDeck::discard() {
     deck.pop_back();
     deckSize--;
@@ -42,9 +47,11 @@ void CardDeck::discard() {
     return;
 }
 
+// add a 52-card deck to the larger deck
 void CardDeck::addNewDeck() {
     deck.resize(deckSize + 52, -1);
 
+    // add new cards
     for (int i = 0; i < 52; i++) {
         deck[deckSize + i] = i;
     }
@@ -53,41 +60,10 @@ void CardDeck::addNewDeck() {
     return;
 }
 
+// remove a card from the deck and return its value
 int CardDeck::draw() {
     deckSize--;
     int card = deck.back();
     deck.pop_back();
     return card;
-}
-
-void printHand(vector<int> hand) {  // 0-12: spades; 13-25: hearts; 26-38: diamonds; 39-51: clubs
-    for (size_t i = 0; i < hand.size(); i++) {
-        int card = hand[i];
-        string suit;
-        if (card < 13)
-            suit = "♠";
-        else if (card < 26)
-            suit = "♥";
-        else if (card < 39)
-            suit = "♦";
-        else
-            suit = "♣";
-
-        string cardVal;
-        if (card % 13 == 0) {
-            cardVal = "A";
-        } else if (card % 13 < 10) {
-            cardVal = to_string(card % 13 + 1);
-        } else if (card % 13 == 10) {
-            cardVal = "J";
-        } else if (card % 13 == 11) {
-            cardVal = "Q";
-        } else {
-            cardVal = "K";
-        }
-
-        cout << cardVal << suit << ' ';
-    }
-
-    cout << endl;
 }
