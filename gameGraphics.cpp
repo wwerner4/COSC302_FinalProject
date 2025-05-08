@@ -575,17 +575,27 @@ void GameGraphics::playScreen() {
 // show all cpu players' cards and display info about the winner of the hand
 // https://en.sfml-dev.org/forums/index.php?topic=22496.0
 void GameGraphics::endScreen() {
-    int indexStart = textures.size() - ((state->numPlayers - 1) * 2);
+
+    int remainingPlayers = 0;
+    for (int i = 1; i < state->numPlayers; i++) {
+        if (!state->folds[i]) {
+            remainingPlayers++;
+        }
+    }
+
+    int index = textures.size() - (remainingPlayers * 2);
     for (int i = 1; i < state->numPlayers; i++) {
         if (!state->folds[i]) {
             for (int j = 0; j < 2; j++) {
-                sf::Texture *texture = textures[indexStart + (i - 1) * 2 + j];
+                sf::Texture *texture = textures[index];
 
                 string newTexture = getCardName(state->hands[i][j]);
                 texture = new sf::Texture;
                 texture->loadFromFile(newTexture);
 
-                sprites[indexStart + (i - 1) * 2 + j]->setTexture(*texture);
+                sprites[index]->setTexture(*texture);
+
+                index++;
             }
         }
     }
