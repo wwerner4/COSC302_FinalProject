@@ -1,3 +1,10 @@
+GitHub repo link: https://github.com/wwerner4/COSC302_FinalProject
+Authors: William Mason Werner and Jake Frohlich
+
+For this project, we have created a Texas Hold 'Em poker game entirely in C++. The frontend of the game consists of a GUI window that was created with the SFML library for C++. All player interaction is handled through this GUI window through clickable buttons. The basic game loop was built in such a way that it polls for user input upon the generation of each GUI frame, which allows the GUI to continue updating while the game loop awaits user input. These portions of the project were principally Mason's responsibility. Jake focused on the backend of the project, developing a simple ML model to give cpu players decision-making capabilities. Jake also developed the function that detects the quality of a player's hand, which is a complex algorithmic problem.
+
+This project has been a unique challenge as compared to other projects in our previous computer science cirriculum because of its open-ended nature, and we both enjoyed the process of continually setting our own goals and then learning how to build functionality to achieve these goals. Overall, this project has been highly rewarding and we are proud of the end result.
+
 1. Special libraries needed to build/compile if personal machines were used
     The graphics for our game were developed with the Simple and Fast Multimedia Library (SFML V2.5.1) in C++. This library must be installed on the system used to compile our program. To install SFML V2.5.1 on a Linux machine, run the following command in the terminal: `sudo apt-get install libsfml-dev=2.5.1`. We were not able to run our project on the Hydra/Tesla machines because we do not have to capability to install SFML on those machines.
 2. Instructions on how to build/compile your program
