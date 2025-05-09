@@ -63,7 +63,7 @@ Before Challenge 7
 4 minutes: Understanding Poker hand types (See this video: https://www.youtube.com/watch?v=wVVODJ323p0)
 1 hour: Understanding the SFML library and how to install WSL to use it on my system. (SFML documentation: https://www.sfml-dev.org/documentation/3.0.1/) 
 (How to install WSL: https://learn.microsoft.com/en-us/windows/wsl/install)
-1 hour 30 minutes - Understanding what the Gini formula is and its general use-case. In regards to poker, jotted ideas on how to applit to chips and other contexts. I also used this time to review different implementations of Gini is various coding examples.
+1 hour 30 minutes - Understanding what the Gini formula is and its general use-case. In regards to poker, jotted ideas on how to apply it to chips and other contexts. I also used this time to review different implementations of Gini is various coding examples.
 (What is Gini? https://www.youtube.com/watch?v=1MIcIKVs-jo, Gini index in regards to decision tree: https://blog.quantinsti.com/gini-index/, More information on decision tree Gini application: https://www.educative.io/answers/how-to-numerically-construct-a-decision-tree-with-gini-index, Coding examples: https://github.com/oliviaguest/gini, https://github.com/mckib2/pygini, Gini Wikipedia: https://en.wikipedia.org/wiki/Gini_coefficient)
 
 Before Progress Report 1
