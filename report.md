@@ -17,20 +17,25 @@ This project has been a unique challenge as compared to other projects in our pr
     This project should be compilable from any linux system that has SFML installed, but if an in-person demo of our project is necessary, we will be available during finals week.
 
     Mason's Time Log:
+
+Before challenge07:
 00:20 - Wrote out a basic rubric milestones-wmw.txt. This document will guide future development work and team meetings.
 01:50 - Wrote and tested a basic cardDeck class with the capability to handle multiple decks of cards. The class allows for deck shuffling, card drawing, card discarding, and adding in fresh 52-card decks to the larger game deck. I also setup a basic makefile to facilitate quick testing of all files in our repo.
 01:45 - Watched a tutorial on the basics of Unreal Engine (https://www.youtube.com/watch?v=XRmn-EYt8wI&list=PLncmXJdh4q88DFCEVuGpOY3AGQwBvoQnh). I skipped the sections of the video that seemed less relevant at this time, like sections on the asset marketplace and on mesh materials. This tutorial gave me a basic idea of how to build scenes in Unreal, but I still would like to learn more about what is possible with C++ scripting in Unreal before I feel comfortable committing to using Unreal in our project.
 01:15 - Watched a tutorial on working with C++ in Unreal studio (https://www.youtube.com/watch?v=nvruYLgjKkk&list=PL-m4pn2uJvXHL5rxdudkhqrSRM5gN43YN). As of now, it looks like building a project in Unreal is less compartmentalized than I had hoped. An alternative, lighter weight C++ library might be a better option. I watched a few tutorials on SFML ( https://www.youtube.com/watch?v=eE3qGNdEpEs & https://www.youtube.com/watch?v=0WlBFTf5vhM), and that library seems to suit our needs better.
 
+Before Progress Report 1:
 01:15 - Installed SFML 2.5.1. Figured out how to compile and link with header files from an external library. Wrote a test program to draw an empty GUI window.
 01:00 - Reading SFML documentation and drawing "Hello World" to a GUI window
 00:15 - Troubleshooting window scaling issues
 
+Before Progress Report 2:
 00:30 - Solved the window scaling issues (by resetting the window's defined size on each resize event)
 01:10 - Setting up a custom class to contain drawable game scenes. Troubleshooting an issue with the virtual sf::Drawable class causing a seg fault when iterating through and drawing elements of a vector of Drawables
 01:10 - Solved the issue with sf::Drawables (created objects were going out of scope and being deleted). Continued reformatting graphics code to exist in its own class, with different scenes created by calling class functions.
 00:40 - Finished setting up the custom GameGraphics class. Started creating the title screen scene.
 
+Before Demo Day:
 01:30 - Finished a first draft of the title screen scene. Added functionality for detecting interactable buttons being pressed.
 00:40 - Started creating the main game scene. Set up infrastructure to handle textures and sprites (to draw game assets).
 00:20 - Added decoration to the title screen. modified the interactable button handler onClick()
@@ -43,6 +48,8 @@ This project has been a unique challenge as compared to other projects in our pr
 02:30 - Bug fixes (mostly fixing a bug where after the user folds, no cpu players would bet). Adding an end screen to show hidden cpu cards and display the winner.
 02:40 - Testing/debugging Jake's code for determining the winning hand at the end of the game. This is mostly working now, with a few outstanding bugs at edge cases.
 00:30 - fixing bugs related to betting in Jake's cpu player logic
+
+Before Final Turn-In:
 01:00 - Repairing files that Jake accidentally overwrote by pushing before pulling updates. Fixing a memory leak. Debugging issues with bets larger than a player's number of remaining chips.
 00:40 - Bugfixes related to player betting. added a game over condition for when all but 1 player is out of chips.
 00:30 - Fixed a bug where straights were being detected on hands of size < 5, causing ai to be overconfident.
@@ -66,6 +73,8 @@ This project has been a unique challenge as compared to other projects in our pr
 4/30 @ 12:40pm - Jake and I worked together in his lab section, discussing the points at which my frontend and his backend need to interact. I wrote out a few placeholder functions for Jake to implement that could pass input from his model to the game loop that I created. My next steps were to give the main game scene the capability to reflect the state of the game, and Jake's next goal was to connect his AI agent into the game loop. Jake also plans to add a function that will determine which player has won a given hand.
 
 5/6 @ 10:00am - Jake and I worked out some bugs together and decided on which build to show off during demo day. During this meeting and into demo day, we discussed what work remains on the project. I have some UI and game flow bugs, and Jake has some tuning of cpu player parameters to complete.
+
+5/8 @ 8:00pm - We pushed some final updates and worked together to build our project report.
 
     Resources Used:
 https://www.sfml-dev.org/tutorials/2.5/
