@@ -26,11 +26,13 @@ void GameState::bet(int player) {
         return;
     }
 
+    // in poker, a player's hand is their two delt cards and the 5 cards on the table. here we are putting both together for easier processin
     vector<int> handIncludingCommunityCards = hands[player];
     handIncludingCommunityCards.insert(handIncludingCommunityCards.end(), table.begin(), table.end());
+    // getting hand value from all 7 cards
     string handType = evaluateHand(handIncludingCommunityCards);
 
-    // if the cpu player chooses to fold
+    // if the cpu player chooses to fold for this hand
     if (aiShouldFold(player, handType, checkBet - bets[player], pot, chips)) {
         folds[player] = true;
         nextPlayer();
@@ -39,7 +41,7 @@ void GameState::bet(int player) {
         sleep(1);
         return;
     }
-
+    // get what the Ai bets
     int aiBet = aiChosenBet(player, handType, checkBet, stageStartPot, chips);
     int newBet = aiBet - bets[player];
 
@@ -70,6 +72,7 @@ void GameState::bet(int player) {
     playerBet = minBet;
     playerHasBet = false;
 
+    // sleep for viewing convenience 
     sleep(1);
     nextPlayer();  // move on to next player
 
@@ -131,6 +134,7 @@ void GameState::gameBegin() {
     bool playerBetSet = false;  // used to control the initialization of playerBet and minBet
 
     // init dealer
+    // dealer rotates around table every turn
     dealer = (dealer + 1) % numPlayers;
     turn = dealer;
 
@@ -255,12 +259,15 @@ void GameState::checkState() {
 }
 
 // this function handles changes in the stage of the game
+// the stage is essentially done after each player is done raising/calling for a given turn
+// first we have 0 cards out for community (preflop), then we show three cards (flop), then we show 1 card (turn)
+// then we show 1 last card (river)
 void GameState::newStage() {
     sleep(1);
 
-    // gameStage == 0 is the pre-flop
+    // gameStage == 0 is the pre-flop (zero cards on the table)
 
-    // the flop
+    // the flop (first three cards get put on the table
     if (gameStage == 1) {
         // add 3 table cards
         for (int i = 0; i < 3; i++) {
@@ -270,7 +277,6 @@ void GameState::newStage() {
         playerBet = 0;
         minBet = 0;
         checkBet = 0;
-
         resetBets();
     } else if (gameStage == 2) {  // the turn
         table.push_back(deck->draw());
@@ -302,17 +308,18 @@ void GameState::newStage() {
     return;
 }
 
-// determine who won a hand
+// determine who won a hand out of all the players
 int GameState::determineWinner() {
-    // all 7 cards
+    // all 7 cards for a player
     vector<vector<int>> thePlayerHands;
-    // indexing players
+    // indexing players so we can reference who is who
     vector<int> thePlayersInTheGame;
     // evaluated hands
     vector<string> handTypes;
 
     // Collect active players and their full hands
     for (int i = 0; i < numPlayers; i++) {
+        // dont include someone who has folded since they are out of the game
         if (!folds[i]) {
             // Combine hole cards with community cards
             vector<int> fullHand = hands[i];
@@ -322,17 +329,17 @@ int GameState::determineWinner() {
         }
     }
 
-    // If only one player remains, they win
+    // If only one player remains, they win (last one left in the game wins by default in poker)
     if (thePlayerHands.size() == 1) {
         return thePlayersInTheGame[0];
     }
 
-    // check what is current at each hand
+    // check what is current at each players hand and get the value of each hand
     for (size_t i = 0; i < thePlayerHands.size(); i++) {
         handTypes.push_back(evaluateHand(thePlayerHands[i]));
     }
 
-    // Find best rank in all the hands
+    // Find best rank/value in all the hands (for example like if Two Pair is the highest)
     int bestRank = -1;
     for (size_t i = 0; i < handTypes.size(); i++) {
         int currentRank = handRank(handTypes[i]);
@@ -341,7 +348,7 @@ int GameState::determineWinner() {
         }
     }
 
-    // get index of best hands
+    // get index of best hands (so if Two Pair was the best, find the indexes of the players with Two Pair)
     vector<int> bestHandIndices;
     for (size_t j = 0; j < handTypes.size(); j++) {
         if (handRank(handTypes[j]) == bestRank) {
@@ -349,7 +356,7 @@ int GameState::determineWinner() {
         }
     }
 
-    // If best hand only one, return it cause they won
+    // If best hand only one, return it cause they won (If Two Pair and only one player has Two Pair, everyone else has One Pair and below for example)
     if (bestHandIndices.size() == 1) {
         return thePlayersInTheGame[bestHandIndices[0]];
     }
@@ -359,7 +366,8 @@ int GameState::determineWinner() {
     for (int index : bestHandIndices) {
         tiedHands.push_back(thePlayerHands[index]);
     }
-
+    // from handEvaluator. Settle ties based on which player has higher rank cards within the same evaluation 
     int winningHandIndex = handWinner(tiedHands);  // break ties
+    // return the winning player's index
     return thePlayersInTheGame[bestHandIndices[winningHandIndex]];
 }
