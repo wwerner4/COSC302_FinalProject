@@ -58,14 +58,19 @@ Before Final Turn-In:
 1:15 - More game loop bug fixes, tweaks to ai player
 
 
-    Jake Frohlich's Time Log: 
+Jake Frohlich's Time Log: 
+Before Challenge 7
 4 minutes: Understanding Poker hand types (See this video: https://www.youtube.com/watch?v=wVVODJ323p0)
 1 hour: Understanding the SFML library and how to install WSL to use it on my system. (SFML documentation: https://www.sfml-dev.org/documentation/3.0.1/) 
 (How to install WSL: https://learn.microsoft.com/en-us/windows/wsl/install)
-1 hour 30 minutes: Understanding what the Gini formula is and its general use-case. In regards to poker, jotted ideas on how to applit to chips and other contexts. I also used this time to review different implementations of Gini is various coding examples.
+1 hour 30 minutes - Understanding what the Gini formula is and its general use-case. In regards to poker, jotted ideas on how to applit to chips and other contexts. I also used this time to review different implementations of Gini is various coding examples.
 (What is Gini? https://www.youtube.com/watch?v=1MIcIKVs-jo, Gini index in regards to decision tree: https://blog.quantinsti.com/gini-index/, More information on decision tree Gini application: https://www.educative.io/answers/how-to-numerically-construct-a-decision-tree-with-gini-index, Coding examples: https://github.com/oliviaguest/gini, https://github.com/mckib2/pygini, Gini Wikipedia: https://en.wikipedia.org/wiki/Gini_coefficient)
+
+Before Progress Report 1
 4 hours: Deciding and handling/developing the initial way to store cards and approximate its value. (Working around 0-51 card system using modulus and card / 13 to decided rank and suit). Also used this time to develop the initial approach to figure out a player Pair, Two Pair, Three of a Kind and Full House from a given vector of player hand (part of evaluateHand in /CardEvaluation/handEvaluator.cpp. Of course also made the associated .h file for handEvaluator.cpp with it. Much of this was the early iteration of the CardEvaluation folder, which has since changed.
 4 hours: implemented more detection for hand types for handEvaluator. Detected straight, flush, royal flush and straight flush. Additionally, added a ranking system for a given handType (handRank function). 2 of the four hours was testing and debugging for differentiating edge cases for straight flush and straight. For example, Ace 2, 3, 4, 5 is considered a straight, the worst straight, but also ace can be used to form two different straights (A, K, Q, J, 10).
+
+Before Progress Report 2/Demo
 1 hour 15 minutes: developing, testing and debugging getSortedRanks function in handEvaluator - implementing the sorting function for a given players hand. The difficult issue here was that the Ace is both the lowest and highest value card (contextually) in the game. Edge cases took time to debug.
 30 minutes: implementing initial handWinner in handEvaluator.cpp.
 1 hour 30 minutes: debugging handWinner for tie breaker error. Fixed a bug where if two players have the same hand type, the system would incorrectly choose which hand is better
