@@ -103,27 +103,24 @@ string evaluateHand(const vector<int>& hand) {
         }
     }
 
-    // Check for straight (5 ranks in a row by value, like 2,3,4,5,6)
-    // we have to check all combinations (7,5) (cant just check adjacents because we could have a pair in the middle of the sorted ranks vector)
+    // Check for straight (sequential ranks)
+    // we cannot just check that all ranks are adjacent because we could have 2 non-sequential cards in the 7-card hand
     bool isStraight = false;
     vector<int> straightCards;
     
     straightCards.push_back(ranks[0]);
-    for (size_t i = 1; i < ranks.size(); i++) 
-    {
-        // basically since sorted already we can just iterate from beginning to end and just check sequential order
-        // the edge case here are two things. Recall that Ace can either be of value effectively like a rheoretical 1(the card below two) and also
-        // the card above King (in our case we just define that as 13 since King is 12
-        if (ranks[i] != ranks[i - 1] + 1) 
-        {
-            // not a current straight
+
+    for (size_t i = 1; i < ranks.size(); i++) {
+        // if 2 cards are not sequential, clear straightCards. straightCards only stores sequential card sets
+        if (ranks[i] != ranks[i - 1] + 1) {
             straightCards.clear();
         }
         straightCards.push_back(ranks[i]);
-    }
-    // straight found ! 
-    if (straightCards.size() >= 5) {
-        isStraight = true;
+
+        // is straightCards ever becomes long enough, set isStriaght to true
+        if (straightCards.size() >= 5) {
+            isStraight = true;
+        }
     }
 
     // Special case for Ace-low straight (A-2-3-4-5)
@@ -145,14 +142,15 @@ string evaluateHand(const vector<int>& hand) {
     bool isStraightFlush = false;
     // royal flush for reference is essentially just a straight + a hand with 5 cards of the same suit where the straight and suit are all the same cards
     bool isRoyalFlush = false;
-    // need to know if the same 5 cards make up a straight and a flush, otherwise we have only a straight
-    if (isStraight && isFlush) 
-    {
+  
+    // we need to know if the same 5 cards make up a straight and a flush, otherwise we have only a flush
+    if (isStraight && isFlush) {
         vector<int> hearts;
         vector<int> diamonds;
         vector<int> clubs;
         vector<int> spades;
 
+        // split the hand up by suit
         for (size_t i = 0; i < hand.size(); i++) {
             // get the card and its suit, rank
             int card = hand[i];
@@ -172,26 +170,23 @@ string evaluateHand(const vector<int>& hand) {
                 spades.push_back(rank);
             }
         }
+
+        // store suits in a 2D vector for easier iteration
         vector<vector<int>> sortedHand;
         sortedHand.push_back(hearts);
         sortedHand.push_back(diamonds);
         sortedHand.push_back(clubs);
         sortedHand.push_back(spades);
 
+        // sort each sub-vector
         for (size_t i = 0; i < sortedHand.size(); i++) {
             // Sorting makes it easier to tell if we have a straight 
             sort(sortedHand[i].begin(), sortedHand[i].end());
-
-            // testin 
-            for (size_t j = 0; j < sortedHand[i].size(); j++) {
-                cout << sortedHand[i][j] << ", ";
-            }
-            cout << endl;
         }
 
         bool isAceLowStraightFlush = false;
-        // recall that the straight low (Ace through the 5 card) is a special case, so we also have to do that same logic for the 
-        // striaght flush 
+
+        // for each sub-vector, do the same straight check as done previously for isStraight
         for (int i = 0; i < 4; i++) {
             if (sortedHand[i].size() >= 5) {
                 vector<int> straightFlushCards;
@@ -205,12 +200,7 @@ string evaluateHand(const vector<int>& hand) {
                     }
                     // adding to the return 
                     straightFlushCards.push_back(sortedHand[i][j]);
-                }
 
-                for (size_t j = 0; j < straightFlushCards.size(); j++) {
-                    cout << straightFlushCards[j] << ", ";
-                }
-                cout << endl;
                 // if we have 5 flush cards and they make a straight, we have a straight flush
                 if (straightFlushCards.size() >= 5) {
                     isStraightFlush = true;
@@ -235,7 +225,7 @@ string evaluateHand(const vector<int>& hand) {
             }
         }
 
-        // a straight flush is any type of straight flush
+        // royal flush counts as its own hand rank
         isStraightFlush = isStraightFlush || isAceLowStraightFlush;
     }
 
@@ -402,47 +392,5 @@ int handWinner(const std::vector<std::vector<int>>& playerHands) {
 
     return bestIndex;
 }
-
-// this is all wrong...
-
-// string evaluateHand(const vector<int>& hand)
-// {
-//     // confirm the hand size
-//
-
-//     // get and sort ranks (0-12 where 0=2, 12=Ace)
-//     vector<int> ranks;
-//     unordered_map<int, int> rankFrequency;
-
-//
-//     sort(ranks.begin(), ranks.end());
-
-//     // Count pairs and three of a kind
-//     int pairCount = 0;
-//     bool hasThreeOfAKind = false;
-
-//     // just checking for the frequency that a certain card appears
-//     for (const auto& [rank, count] : rankFrequency)
-//     {
-//
-//         if (count == 3)
-//         {
-//             hasThreeOfAKind = true;
-//         }
-//     }
-
-//     // Return hand type
-//     if (hasThreeOfAKind)
-//     {
-//         return "Three of a Kind";
-//     }
-//     if (pairCount == 2)
-//     {
-//         return "Two Pair";
-//     }
-//     if (pairCount == 1) return "One Pair";
-//     if (isStraight || isLowStraight) return "Straight";
-//     return "High Card";
-// }
 
 }  // namespace std
