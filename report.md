@@ -59,7 +59,6 @@ Before Final Turn-In:
 
 
 Jake Frohlich's Time Log: 
-Before Challenge 7
 4 minutes: Understanding Poker hand types (See this video: https://www.youtube.com/watch?v=wVVODJ323p0)
 1 hour: Understanding the SFML library and how to install WSL to use it on my system. (SFML documentation: https://www.sfml-dev.org/documentation/3.0.1/) 
 (How to install WSL: https://learn.microsoft.com/en-us/windows/wsl/install)
