@@ -40,6 +40,15 @@ void GameState::bet(int player) {
         return;
     }
 
+    if (folds[player]) {
+        hasBet[player] = true;
+        nextPlayer();
+
+        playerBet = minBet;
+        playerHasBet = false;
+        return;
+    }
+
     int aiBet = aiChosenBet(player, handType, checkBet, stageStartPot, chips);
     int newBet = aiBet - bets[player];
 
@@ -62,7 +71,8 @@ void GameState::bet(int player) {
     minBet = checkBet - bets[0];
     if (minBet < 0) {
         minBet = 0;
-    } if (minBet > chips[0]) {
+    }
+    if (minBet > chips[0]) {
         minBet = chips[0];
     }
 
@@ -177,7 +187,8 @@ void GameState::gameBegin() {
     if (!playerBetSet) {
         minBet = bigBlind;
         playerBet = minBet;
-    } if (minBet > chips[0]) {
+    }
+    if (minBet > chips[0]) {
         minBet = chips[0];
     }
 

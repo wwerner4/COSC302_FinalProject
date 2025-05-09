@@ -181,7 +181,6 @@ string evaluateHand(const vector<int>& hand) {
                 straightFlushCards.push_back(sortedHand[i][0]);
 
                 for (size_t j = 1; j < sortedHand[i].size(); j++) {
-                    cout << sortedHand[i][j] << endl;
                     // we dont have a straight currently
                     if (sortedHand[i][j] != sortedHand[i][j - 1] + 1) {
                         straightFlushCards.clear();
