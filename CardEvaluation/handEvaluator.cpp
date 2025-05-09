@@ -79,7 +79,6 @@ string evaluateHand(const vector<int>& hand) {
     straightCards.push_back(ranks[0]);
 
     for (size_t i = 1; i < ranks.size(); i++) {
-
         // if 2 cards are not sequential, clear straightCards. straightCards only stores sequential card sets
         if (ranks[i] != ranks[i - 1] + 1) {
             straightCards.clear();
@@ -337,47 +336,5 @@ int handWinner(const std::vector<std::vector<int>>& playerHands) {
 
     return bestIndex;
 }
-
-// this is all wrong...
-
-// string evaluateHand(const vector<int>& hand)
-// {
-//     // confirm the hand size
-//
-
-//     // get and sort ranks (0-12 where 0=2, 12=Ace)
-//     vector<int> ranks;
-//     unordered_map<int, int> rankFrequency;
-
-//
-//     sort(ranks.begin(), ranks.end());
-
-//     // Count pairs and three of a kind
-//     int pairCount = 0;
-//     bool hasThreeOfAKind = false;
-
-//     // just checking for the frequency that a certain card appears
-//     for (const auto& [rank, count] : rankFrequency)
-//     {
-//
-//         if (count == 3)
-//         {
-//             hasThreeOfAKind = true;
-//         }
-//     }
-
-//     // Return hand type
-//     if (hasThreeOfAKind)
-//     {
-//         return "Three of a Kind";
-//     }
-//     if (pairCount == 2)
-//     {
-//         return "Two Pair";
-//     }
-//     if (pairCount == 1) return "One Pair";
-//     if (isStraight || isLowStraight) return "Straight";
-//     return "High Card";
-// }
 
 }  // namespace std
