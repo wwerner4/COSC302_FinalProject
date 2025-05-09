@@ -23,12 +23,11 @@ string getCardName(int cardValue) {
             "hearts", "diamonds", "clubs", "spades"};
 
     // we use the modulus operator to determine the card's value from 0-12 (where we consider 0 as Ace and 12 as King). This is the Rank
-    // the Suit is determined by the card number (like the card's place in the deck, divided by 13). Consider the 0th card, 
+    // the Suit is determined by the card number (like the card's place in the deck, divided by 13). Consider the 0th card,
     // 0/13 = 0. We assign 0 to be hearts, 1 to be diamond, 2 to be club, and 3 is spade. this way we can separate the 4 different card types
     // There are 13 of each of the 4 card types (13 * 4 = 52 total cards in a deck). This is our easy way to reference which card and type it is.
     return "./data/PixelPlayingCardsPack/" + ranks[cardValue % 13] + "_" + suits[cardValue / 13] + "_white.png";
 }
-
 
 // This function essentially simply returns the hand type in poker. This can be used on any amount of cards
 // for Example, If a player has Ace of Spades and Ace of Diamonds in their hand (and this is the only match found),
@@ -42,7 +41,7 @@ string evaluateHand(const vector<int>& hand) {
 
     // get and sort ranks (0-12 where 0=ace, 1 is actually 2, 2=3, .. 12 = king)
     vector<int> ranks;
-    // map to store the amount of ranks we see 
+    // map to store the amount of ranks we see
     unordered_map<int, int> rankFrequency;
     // map to store the suit counter (consider 5 cards of any suit type should by default be at least the value of a flush)
     unordered_map<int, int> suitFrequency;
@@ -52,13 +51,12 @@ string evaluateHand(const vector<int>& hand) {
         // out of bounds....
         if (card < 0 || card > 51)
             return "Invalid card value";
-    
+
         int rank = card % 13;  // 0=ace, 1  is 2, etc,  12=king
         int suit = card / 13;  // 0=hearts, 1= diamonds, 2 = clubs, 3=spades (read getCardName documentation to see why)
 
-         // dont add duplicate rank to ranks
-        if (find(ranks.begin(), ranks.end(), rank) == ranks.end()) 
-        { 
+        // dont add duplicate rank to ranks
+        if (find(ranks.begin(), ranks.end(), rank) == ranks.end()) {
             ranks.push_back(rank);
         }
         // add each of the card's features to their respective map counter (we need to keep track in case of Flush, Straight flush etc)
@@ -70,8 +68,7 @@ string evaluateHand(const vector<int>& hand) {
 
     // Check for flush (all cards of the same suit)
     bool isFlush = false;
-    for (size_t i = 0; i < suitFrequency.size(); i++) 
-    {
+    for (size_t i = 0; i < suitFrequency.size(); i++) {
         // by definition if there is a suit type that the player's hand has at least 5 of, then it's a flush
         if (suitFrequency[i] >= 5) {
             isFlush = true;
@@ -85,20 +82,14 @@ string evaluateHand(const vector<int>& hand) {
     bool hasThreeOfAKind = false;
     bool hasFourOfAKind = false;
 
-    
-    for (unordered_map<int, int>::iterator i = rankFrequency.begin(); i != rankFrequency.end(); i++) 
-    {
-        
-        if (i->second == 2) 
-        {
+    for (unordered_map<int, int>::iterator i = rankFrequency.begin(); i != rankFrequency.end(); i++) {
+        if (i->second == 2) {
             pairCount++;
             // if we have 3 of the same card (rank) we by default have a 3 of a kind
-        } else if (i->second == 3) 
-        {
+        } else if (i->second == 3) {
             hasThreeOfAKind = true;
-                // if we have 4 of the same card (rank) we by default have a 4 of a kind
-        } else if (i->second == 4) 
-        {
+            // if we have 4 of the same card (rank) we by default have a 4 of a kind
+        } else if (i->second == 4) {
             hasFourOfAKind = true;
         }
     }
@@ -107,7 +98,7 @@ string evaluateHand(const vector<int>& hand) {
     // we cannot just check that all ranks are adjacent because we could have 2 non-sequential cards in the 7-card hand
     bool isStraight = false;
     vector<int> straightCards;
-    
+
     straightCards.push_back(ranks[0]);
 
     for (size_t i = 1; i < ranks.size(); i++) {
@@ -142,7 +133,7 @@ string evaluateHand(const vector<int>& hand) {
     bool isStraightFlush = false;
     // royal flush for reference is essentially just a straight + a hand with 5 cards of the same suit where the straight and suit are all the same cards
     bool isRoyalFlush = false;
-  
+
     // we need to know if the same 5 cards make up a straight and a flush, otherwise we have only a flush
     if (isStraight && isFlush) {
         vector<int> hearts;
@@ -157,14 +148,11 @@ string evaluateHand(const vector<int>& hand) {
             int suit = card / 13;
             int rank = card % 13;
             // for each card, get its type (the vectors above) and is rank and put that into the respective vector
-            if (suit == 0) 
-            {
+            if (suit == 0) {
                 hearts.push_back(rank);
-            } else if (suit == 1) 
-            {
+            } else if (suit == 1) {
                 diamonds.push_back(rank);
-            } else if (suit == 2) 
-            {
+            } else if (suit == 2) {
                 clubs.push_back(rank);
             } else {
                 spades.push_back(rank);
@@ -180,7 +168,7 @@ string evaluateHand(const vector<int>& hand) {
 
         // sort each sub-vector
         for (size_t i = 0; i < sortedHand.size(); i++) {
-            // Sorting makes it easier to tell if we have a straight 
+            // Sorting makes it easier to tell if we have a straight
             sort(sortedHand[i].begin(), sortedHand[i].end());
         }
 
@@ -191,19 +179,20 @@ string evaluateHand(const vector<int>& hand) {
             if (sortedHand[i].size() >= 5) {
                 vector<int> straightFlushCards;
                 straightFlushCards.push_back(sortedHand[i][0]);
-        
+
                 for (size_t j = 1; j < sortedHand[i].size(); j++) {
                     cout << sortedHand[i][j] << endl;
                     // we dont have a straight currently
                     if (sortedHand[i][j] != sortedHand[i][j - 1] + 1) {
                         straightFlushCards.clear();
                     }
-                    // adding to the return 
+                    // adding to the return
                     straightFlushCards.push_back(sortedHand[i][j]);
 
-                // if we have 5 flush cards and they make a straight, we have a straight flush
-                if (straightFlushCards.size() >= 5) {
-                    isStraightFlush = true;
+                    // if we have 5 flush cards and they make a straight, we have a straight flush
+                    if (straightFlushCards.size() >= 5) {
+                        isStraightFlush = true;
+                    }
                 }
 
                 // same edge case as the straight (since this is a special type of straight anyway)
@@ -216,7 +205,7 @@ string evaluateHand(const vector<int>& hand) {
                 }
 
                 // this is the upper straight flush (royal) which is the best hand in poker. it is the A, K, Q, J, 10
-                // remember A is =, K is 12, Q is 11... 
+                // remember A is =, K is 12, Q is 11...
                 if (sortedHand[i][0] == 0 && sortedHand[i][sortedHand[i].size() - 4] == 9 &&
                     sortedHand[i][sortedHand[i].size() - 3] == 10 && sortedHand[i][sortedHand[i].size() - 2] == 11 &&
                     sortedHand[i][sortedHand[i].size() - 1] == 12) {
@@ -292,7 +281,7 @@ int handRank(const string& handType) {
     return 0;
 }
 
-// sorts the ranks of a hand 
+// sorts the ranks of a hand
 vector<int> getSortedRanks(const vector<int>& hand) {
     // ranks and count their appearences/freq
     vector<int> ranks;
@@ -342,7 +331,7 @@ vector<int> getSortedRanks(const vector<int>& hand) {
         }
     }
 
-    //  the ranks in order in the sorted list 
+    //  the ranks in order in the sorted list
     vector<int> sortedRanks;
     for (const auto& pair : rankFreqPairs) {
         sortedRanks.push_back(pair.first);
@@ -353,7 +342,7 @@ vector<int> getSortedRanks(const vector<int>& hand) {
 // determine which hand is actually better than the other when same rank
 int handWinner(const std::vector<std::vector<int>>& playerHands) {
     int bestIndex = 0;
-    // temp best rank 
+    // temp best rank
     int bestRank = handRank(evaluateHand(playerHands[0]));
     // temp best sorted rank
     vector<int> bestSorted = getSortedRanks(playerHands[0]);
