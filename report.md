@@ -16,7 +16,7 @@ This project has been a unique challenge as compared to other projects in our pr
 5. Any other information that will inform the instructor and TAs for final grading. If there is special equipment, e.g., NES controllers or a special library, we’ll make an appointment for the demo during exam week
     This project should be compilable from any linux system that has SFML installed, but if an in-person demo of our project is necessary, we will be available during finals week.
 
-    Mason's Time Log:
+    Mason Werner's Time Log:
 
 Before challenge07:
 00:20 - Wrote out a basic rubric milestones-wmw.txt. This document will guide future development work and team meetings.
